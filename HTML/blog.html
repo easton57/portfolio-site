@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Easton Seidel - Blog</title>
+        <link rel="stylesheet" href="../CSS/styles.css">
+    </head>
+    <body>
+        <div class="content">
+            <a href="index.html"><h1>Easton Seidel</h1></a>
+
+            <nav class="navbar">
+                <ul>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                </ul>
+            </nav>
+
+            <h2>Blog</h2>
+
+            <div class="main-content full-width">
+                <div class="content-body">
+                    <div id="blog-posts">
+                        <!-- Posts will be loaded here -->
+                    </div>
+                </div>
+           </div>
+
+            <div class="footer">
+                <p>Copyright 2025 Easton Seidel</p>
+            </div>
+        </div>
+
+        <script>
+            async function loadBlogPosts() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/all-posts');
+                    const posts = await response.json();
+                    
+                    const postsContainer = document.getElementById('blog-posts');
+                    postsContainer.innerHTML = posts.map(post => `
+                        <div class="blog-post">
+                            <h3><a href="blog-post.html?id=${post.id}">${post.title}</a></h3>
+                            <p>${post.summary}</p>
+                            <small>${new Date(post.created_at).toLocaleDateString()}</small>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error loading blog posts:', error);
+                    document.getElementById('blog-posts').innerHTML = '<p>Error loading posts</p>';
+                }
+            }
+
+            // Load posts when the page loads
+            document.addEventListener('DOMContentLoaded', loadBlogPosts);
+        </script>
+    </body>
+</html>

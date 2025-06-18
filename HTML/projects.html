@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Easton Seidel - Projects</title>
+        <link rel="stylesheet" href="../CSS/styles.css">
+    </head>
+    <body>
+        <div class="content">
+            <a href="index.html"><h1>Easton Seidel</h1></a>
+
+            <nav class="navbar">
+                <ul>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                </ul>
+            </nav>
+            
+            <h2>Projects</h2>
+
+            <div class="main-content full-width">
+                <div class="content-body">
+                    <div id="projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+           </div>
+
+            <div class="footer">
+                <p>Copyright 2025 Easton Seidel</p>
+            </div>
+        </div>
+
+        <script>
+            async function loadProjects() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/projects');
+                    const projects = await response.json();
+                    
+                    const projectsContainer = document.getElementById('projects');
+                    projectsContainer.innerHTML = projects.map(project => `
+                        <div class="projects">
+                            <h3><a href="project.html?id=${project.id}">${project.title}</a></h3>
+                            <p>${project.summary}</p>
+                            <small>${new Date(project.created_at).toLocaleDateString()}</small>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error loading projects:', error);
+                    document.getElementById('projects').innerHTML = '<p>Error loading projects</p>';
+                }
+            }
+
+            // Load posts when the page loads
+            document.addEventListener('DOMContentLoaded', loadProjects);
+        </script>
+    </body>
+</html>
