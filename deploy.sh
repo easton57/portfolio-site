@@ -54,7 +54,7 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -72,22 +72,22 @@ mkdir -p logs
 mkdir -p backups
 
 # Backup existing data if it exists
-if docker-compose ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
     print_status "Backing up existing data..."
-    docker-compose exec postgres pg_dump -U $DB_USER $DB_NAME > backups/backup_$(date +%Y%m%d_%H%M%S).sql 2>/dev/null || print_warning "Could not create backup (database might not be running)"
+    docker compose exec postgres pg_dump -U $DB_USER $DB_NAME > backups/backup_$(date +%Y%m%d_%H%M%S).sql 2>/dev/null || print_warning "Could not create backup (database might not be running)"
 fi
 
 # Stop existing containers
 print_status "Stopping existing containers..."
-docker-compose down
+docker compose down
 
 # Remove old images to ensure fresh build
 print_status "Removing old images..."
-docker-compose down --rmi all
+docker compose down --rmi all
 
 # Build and start services
 print_status "Building and starting services..."
-docker-compose up -d --build
+docker compose up -d --build
 
 # Wait for services to be healthy
 print_status "Waiting for services to be healthy..."
@@ -97,11 +97,11 @@ sleep 30
 print_status "Checking service health..."
 
 # Check PostgreSQL
-if docker-compose exec postgres pg_isready -U $DB_USER -d $DB_NAME > /dev/null 2>&1; then
+if docker compose exec postgres pg_isready -U $DB_USER -d $DB_NAME > /dev/null 2>&1; then
     print_status "PostgreSQL is healthy"
 else
     print_error "PostgreSQL is not healthy"
-    docker-compose logs postgres
+    docker compose logs postgres
     exit 1
 fi
 
@@ -117,7 +117,7 @@ if curl -f http://localhost:80 > /dev/null 2>&1; then
     print_status "Traefik is responding"
 else
     print_error "Traefik is not responding"
-    docker-compose logs traefik
+    docker compose logs traefik
     exit 1
 fi
 
@@ -127,8 +127,8 @@ print_status "Traefik dashboard: https://traefik.eastonseidel.com"
 
 # Show running containers
 print_status "Running containers:"
-docker-compose ps
+docker compose ps
 
 # Show logs
 print_status "Recent logs:"
-docker-compose logs --tail=20 
+docker compose logs --tail=20 
