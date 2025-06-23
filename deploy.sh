@@ -22,7 +22,7 @@ print_warning() {
 
 print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
-
+}
 
 # Check if running as root
 if [[ $EUID -eq 0 ]]; then
