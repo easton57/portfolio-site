@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # PostgreSQL Database
   postgres:
@@ -44,23 +46,7 @@ services:
         condition: service_healthy
     networks:
       - internal
-      - traefik_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portfolio.rule=Host(`eastonseidel.com`) || Host(`www.eastonseidel.com`)"
-      - "traefik.http.routers.portfolio.entrypoints=websecure"
-      - "traefik.http.routers.portfolio.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.portfolio.tls.domains[0].main=eastonseidel.com"
-      - "traefik.http.routers.portfolio.tls.domains[0].sans=www.eastonseidel.com"
-      - "traefik.http.services.portfolio.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik_network"
-      # Security headers
-      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
-      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
-      - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
-      - "traefik.http.middlewares.security-headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.emailjs.com; frame-src https://www.google.com/recaptcha/;"
-      - "traefik.http.routers.portfolio.middlewares=security-headers"
+      - npm_network
 
   # Nginx for static files
   nginx:
@@ -74,76 +60,37 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - internal
-      - traefik_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portfolio-static.rule=Host(`eastonseidel.com`) || Host(`www.eastonseidel.com`)"
-      - "traefik.http.routers.portfolio-static.entrypoints=websecure"
-      - "traefik.http.routers.portfolio-static.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.portfolio-static.tls.domains[0].main=eastonseidel.com"
-      - "traefik.http.routers.portfolio-static.tls.domains[0].sans=www.eastonseidel.com"
-      - "traefik.http.services.portfolio-static.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik_network"
-      # Security headers for static content
-      - "traefik.http.middlewares.static-security-headers.headers.frameDeny=true"
-      - "traefik.http.middlewares.static-security-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.static-security-headers.headers.browserXssFilter=true"
-      - "traefik.http.middlewares.static-security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
-      - "traefik.http.middlewares.static-security-headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.emailjs.com; frame-src https://www.google.com/recaptcha/;"
-      - "traefik.http.routers.portfolio-static.middlewares=static-security-headers"
+      - npm_network
 
-  # Traefik Reverse Proxy
-  traefik:
-    image: traefik:v2.10
-    container_name: portfolio_traefik
+  # Nginx Proxy Manager
+  npm:
+    image: jc21/nginx-proxy-manager:2.11.2
+    container_name: nginx_proxy_manager
     restart: unless-stopped
-    command:
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=namecheap"
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--accesslog.filepath=/var/log/traefik/access.log"
-      - "--accesslog.format=json"
     ports:
       - "80:80"
+      - "81:81" # Admin UI
       - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_certs:/letsencrypt
-      - traefik_logs:/var/log/traefik
-    networks:
-      - traefik_network
     environment:
-      - NAMECHEAP_API_USER=${NAMECHEAP_API_USER}
-      - NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.eastonseidel.com`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_AUTH}"
+      - TZ=UTC
+      - DISABLE_IPV6=true
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - npm_network
 
 volumes:
   postgres_data:
     driver: local
-  traefik_certs:
+  npm_data:
     driver: local
-  traefik_logs:
+  npm_letsencrypt:
     driver: local
 
 networks:
   internal:
     driver: bridge
     internal: true
-  traefik_network:
+  npm_network:
     driver: bridge 
