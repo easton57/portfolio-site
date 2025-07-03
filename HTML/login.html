@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Login - Easton Seidel</title>
+        <link rel="stylesheet" href="../CSS/styles.css">
+        <style>
+            .login-container {
+                max-width: 400px;
+                margin: 50px auto;
+                background-color: #2d2d2d;
+                padding: 40px;
+                border-radius: 5px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+
+            .login-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .login-header h2 {
+                color: #ffffff;
+                margin: 0 0 10px 0;
+            }
+
+            .login-header p {
+                color: #cccccc;
+                margin: 0;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #ffffff;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #3d3d3d;
+                border-radius: 3px;
+                background-color: #1a1a1a;
+                color: #ffffff;
+                font-family: Arial, sans-serif;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #ffffff;
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+
+            .login-btn {
+                width: 100%;
+                background-color: #ffffff;
+                color: #1a1a1a;
+                padding: 12px;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 16px;
+                margin-top: 10px;
+                transition: background-color 0.3s ease;
+            }
+
+            .login-btn:hover {
+                background-color: #cccccc;
+            }
+
+            .login-btn:disabled {
+                background-color: #666666;
+                cursor: not-allowed;
+            }
+
+            .error-message {
+                background-color: #5a2d2d;
+                color: #ffffff;
+                padding: 10px;
+                border-radius: 3px;
+                margin-top: 15px;
+                text-align: center;
+                font-weight: bold;
+                display: none;
+            }
+
+            .back-link {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .back-link a {
+                color: #ffffff;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .back-link a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <a href="index.html"><h1>Easton Seidel</h1></a>
+
+            <div class="main-content full-width">
+                <div class="login-container">
+                    <div class="login-header">
+                        <h2>Admin Login</h2>
+                        <p>Please enter your credentials to access the admin panel</p>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required autocomplete="username">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required autocomplete="current-password">
+                        </div>
+
+                        <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+                    </form>
+
+                    <div id="errorMessage" class="error-message"></div>
+
+                    <div class="back-link">
+                        <a href="index.html">← Back to Home</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Copyright 2025 Easton Seidel</p>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const loginBtn = document.getElementById('loginBtn');
+                const errorMessage = document.getElementById('errorMessage');
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Hide previous error messages
+                errorMessage.style.display = 'none';
+
+                // Disable login button and show loading state
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Signing in...';
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Store the token
+                        localStorage.setItem('authToken', data.token);
+
+                        // Redirect to admin panel
+                        window.location.href = 'admin.html';
+                    } else {
+                        // Show error message
+                        errorMessage.textContent = data.message || 'Login failed. Please check your credentials.';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    // Re-enable login button
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            });
+
+            // Check if user is already logged in
+            window.addEventListener('load', function() {
+                const token = localStorage.getItem('authToken');
+                if (token) {
+                    // Verify token is still valid
+                    fetch('/api/verify-token', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.valid) {
+                            // Redirect to admin panel if already logged in
+                            window.location.href = 'admin.html';
+                        } else {
+                            // Remove invalid token
+                            localStorage.removeItem('authToken');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Token verification error:', error);
+                        localStorage.removeItem('authToken');
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
