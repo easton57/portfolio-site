@@ -131,4 +131,4 @@ docker compose ps
 
 # Show logs
 print_status "Recent logs:"
-docker compose logs --tail=20 
+docker compose logs --tail=20
