@@ -36,7 +36,7 @@
         <script>
             async function loadProjects() {
                 try {
-                    const response = await fetch('http://localhost:3000/api/projects');
+                    const response = await fetch('/api/projects');
                     const projects = await response.json();
                     
                     const projectsContainer = document.getElementById('projects');

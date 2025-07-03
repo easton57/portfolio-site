@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Easton Seidel - About</title>
-        <link rel="stylesheet" href="../CSS/styles.css">
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <link rel="stylesheet" href="../CSS/styles.css" />
+        <script
+            src="https://www.google.com/recaptcha/api.js"
+            async
+            defer
+        ></script>
     </head>
     <body>
         <div class="content">
@@ -25,13 +29,27 @@
                 <div class="content-body">
                     <div class="about-grid">
                         <div class="about-section">
-                            <img src="../IMG/meAndWife.jpg">
-                            <p>If you'd like to contact me, you can use the form to the right or reach out on any of the social media links on the home page. The contact form is the best way as I don't monitor social media regularly.</p>
-                            <br>
-                            <br>
+                            <img src="../IMG/meAndWife.jpg" />
                             <p>
-                                I'm open to any and all offers for work or colaboration if my skill set matches your needs. While I'd like to start moving into professional development, my primary roles have been in Systems Administration. 
-                                I have extensive experience implementing new services and managing those services and their hosts in a professional and personal capacity in my own homelab. Refer to the experience page or contact me for more information.
+                                If you'd like to contact me, you can use the
+                                form to the right or reach out on any of the
+                                social media links on the home page. The contact
+                                form is the best way as I don't monitor social
+                                media regularly.
+                            </p>
+                            <br />
+                            <br />
+                            <p>
+                                I'm open to any and all offers for work or
+                                colaboration if my skill set matches your needs.
+                                While I'd like to start moving into professional
+                                development, my primary roles have been in
+                                Systems Administration. I have extensive
+                                experience implementing new services and
+                                managing those services and their hosts in a
+                                professional and personal capacity in my own
+                                homelab. Refer to the experience page or contact
+                                me for more information.
                             </p>
                         </div>
                         <div class="contact-section">
@@ -39,18 +57,35 @@
                             <form id="contact-form">
                                 <div class="form-group">
                                     <label for="name">Name:</label>
-                                    <input type="text" id="name" name="name" required>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        required
+                                    />
                                 </div>
                                 <div class="form-group">
                                     <label for="email">Email:</label>
-                                    <input type="email" id="email" name="email" required>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                    />
                                 </div>
                                 <div class="form-group">
                                     <label for="message">Message:</label>
-                                    <textarea id="message" name="message" required></textarea>
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        required
+                                    ></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <div class="g-recaptcha" data-sitekey="6Lf49WIrAAAAABZ_dc3MblDNB9L1QgTzd-8Bf5np"></div>
+                                    <div
+                                        class="g-recaptcha"
+                                        data-sitekey="6LdDdHMrAAAAACAFBXAti9TAy03E3RHmcaxKYpZJ"
+                                    ></div>
                                 </div>
                                 <button type="submit">Send Message</button>
                             </form>
@@ -66,64 +101,72 @@
         </div>
 
         <script type="module">
-            document.getElementById('contact-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const statusDiv = document.getElementById('form-status');
-                const captchaResponse = grecaptcha.getResponse();
-                
-                if (!captchaResponse) {
-                    statusDiv.textContent = 'Please complete the CAPTCHA';
-                    return;
-                }
+            document
+                .getElementById("contact-form")
+                .addEventListener("submit", async function (e) {
+                    e.preventDefault();
 
-                // Verify reCAPTCHA via backend
-                let isVerified = false;
-                try {
-                    const verifyRes = await fetch('/api/recaptcha-verify', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ recaptchaResponse: captchaResponse })
-                    });
-                    isVerified = await verifyRes.json();
-                } catch (err) {
-                    isVerified = false;
-                }
+                    const statusDiv = document.getElementById("form-status");
+                    const captchaResponse = grecaptcha.getResponse();
 
-                if (!isVerified) {
-                    statusDiv.textContent = 'CAPTCHA verification failed. Please try again.';
-                    grecaptcha.reset();
-                    return;
-                }
-                
-                statusDiv.textContent = 'Sending...';
-                
-                // Send form data to backend for email sending
-                const formData = {
-                    from_name: document.getElementById('name').value,
-                    from_email: document.getElementById('email').value,
-                    message: document.getElementById('message').value
-                };
+                    if (!captchaResponse) {
+                        statusDiv.textContent = "Please complete the CAPTCHA";
+                        return;
+                    }
 
-                try {
-                    const response = await fetch('/api/contact', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
-                    if (response.ok) {
-                        statusDiv.textContent = 'Message sent successfully!';
-                        document.getElementById('contact-form').reset();
+                    // Verify reCAPTCHA via backend
+                    let isVerified = false;
+                    try {
+                        const verifyRes = await fetch("/api/recaptcha-verify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                recaptchaResponse: captchaResponse,
+                            }),
+                        });
+                        isVerified = await verifyRes.json();
+                    } catch (err) {
+                        isVerified = false;
+                    }
+
+                    if (!isVerified) {
+                        statusDiv.textContent =
+                            "CAPTCHA verification failed. Please try again.";
                         grecaptcha.reset();
-                    } else {
-                        statusDiv.textContent = 'Failed to send message. Please try again.';
+                        return;
+                    }
+
+                    statusDiv.textContent = "Sending...";
+
+                    // Send form data to backend for email sending
+                    const formData = {
+                        from_name: document.getElementById("name").value,
+                        from_email: document.getElementById("email").value,
+                        message: document.getElementById("message").value,
+                    };
+
+                    try {
+                        const response = await fetch("/api/contact", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(formData),
+                        });
+                        if (response.ok) {
+                            statusDiv.textContent =
+                                "Message sent successfully!";
+                            document.getElementById("contact-form").reset();
+                            grecaptcha.reset();
+                        } else {
+                            statusDiv.textContent =
+                                "Failed to send message. Please try again.";
+                            grecaptcha.reset();
+                        }
+                    } catch (error) {
+                        statusDiv.textContent =
+                            "Failed to send message. Please try again.";
                         grecaptcha.reset();
                     }
-                } catch (error) {
-                    statusDiv.textContent = 'Failed to send message. Please try again.';
-                    grecaptcha.reset();
-                }
-            });
+                });
         </script>
     </body>
 </html>

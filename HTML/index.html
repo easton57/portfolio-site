@@ -56,7 +56,7 @@
         <script>
             async function loadBlogPosts() {
                 try {
-                    const response = await fetch('http://localhost:3000/api/recent-posts');
+                    const response = await fetch('/api/recent-posts');
                     const posts = await response.json();
                     
                     const postsContainer = document.getElementById('blog-posts');
