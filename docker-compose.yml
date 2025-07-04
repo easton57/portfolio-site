@@ -84,7 +84,6 @@ services:
       - npm_letsencrypt:/etc/letsencrypt
     networks:
       - npm_network
-      - mealie-network
 
 volumes:
   postgres_data:
