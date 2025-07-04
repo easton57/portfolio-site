@@ -117,7 +117,8 @@ a:hover {
     min-width: 0;
 }
 
-.social-media, .recent-blog-posts {
+.social-media,
+.recent-blog-posts {
     background-color: #2d2d2d;
     padding: 20px;
     border-radius: 5px;
@@ -210,81 +211,107 @@ a:hover {
 }
 
 /* Individual blog post and project page styling */
-.blog-post-full, .project-full {
+.blog-post-full,
+.project-full {
     max-width: 100%;
 }
 
-.post-header, .project-header {
+.post-header,
+.project-header {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #3d3d3d;
 }
 
-.post-header h1, .project-header h1 {
+.post-header h1,
+.project-header h1 {
     margin: 0 0 15px 0;
     color: #ffffff;
     font-size: 2.5em;
 }
 
-.post-meta, .project-meta {
+.post-meta,
+.project-meta {
     margin-bottom: 15px;
 }
 
-.post-meta time, .project-meta time {
+.post-meta time,
+.project-meta time {
     color: #888888;
     font-size: 0.9em;
 }
 
-.post-summary, .project-summary {
+.post-summary,
+.project-summary {
     color: #cccccc;
     font-size: 1.1em;
     line-height: 1.6;
     margin: 0;
 }
 
-.post-content, .project-content {
+.post-content,
+.project-content {
     color: #ffffff;
     line-height: 1.8;
     font-size: 1em;
 }
 
-.post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6,
-.project-content h1, .project-content h2, .project-content h3, .project-content h4, .project-content h5, .project-content h6 {
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6,
+.project-content h1,
+.project-content h2,
+.project-content h3,
+.project-content h4,
+.project-content h5,
+.project-content h6 {
     color: #ffffff;
     margin: 25px 0 15px 0;
 }
 
-.post-content p, .project-content p {
+.post-content p,
+.project-content p {
     margin: 0 0 15px 0;
 }
 
-.post-content a, .project-content a {
+.post-content a,
+.project-content a {
     color: #ffffff;
     text-decoration: underline;
 }
 
-.post-content a:hover, .project-content a:hover {
+.post-content a:hover,
+.project-content a:hover {
     color: #cccccc;
 }
 
-.post-content ul, .post-content ol, .project-content ul, .project-content ol {
+.post-content ul,
+.post-content ol,
+.project-content ul,
+.project-content ol {
     margin: 15px 0;
     padding-left: 20px;
 }
 
-.post-content li, .project-content li {
+.post-content li,
+.project-content li {
     margin-bottom: 5px;
 }
 
-.post-content code, .project-content code {
+.post-content code,
+.project-content code {
     background-color: #1a1a1a;
     padding: 2px 6px;
     border-radius: 3px;
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
     color: #cccccc;
 }
 
-.post-content pre, .project-content pre {
+.post-content pre,
+.project-content pre {
     background-color: #1a1a1a;
     padding: 15px;
     border-radius: 5px;
@@ -292,13 +319,15 @@ a:hover {
     margin: 15px 0;
 }
 
-.post-content pre code, .project-content pre code {
+.post-content pre code,
+.project-content pre code {
     background: none;
     padding: 0;
     color: #ffffff;
 }
 
-.post-content blockquote, .project-content blockquote {
+.post-content blockquote,
+.project-content blockquote {
     border-left: 4px solid #3d3d3d;
     padding-left: 15px;
     margin: 15px 0;
@@ -344,7 +373,7 @@ a:hover {
 }
 
 button[type="submit"] {
-    background-color: #4CAF50;
+    background-color: #4caf50;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -374,9 +403,15 @@ button[type="submit"]:hover {
         flex-direction: column;
     }
 
-    .content-body, .sidebar {
+    .content-body,
+    .sidebar {
         flex: 0 0 100%;
+    }
+
+    /* For pages with sidebars (like index), limit content-body height in mobile */
+    .main-content:not(.full-width) .content-body {
         max-height: 65%;
+        overflow-y: auto;
     }
 
     .footer {
@@ -401,4 +436,4 @@ button[type="submit"]:hover {
     .social-media-icon {
         width: 25px; /* Smaller size on mobile */
     }
-} 
+}
