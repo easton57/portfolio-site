@@ -107,6 +107,14 @@
                     e.preventDefault();
 
                     const statusDiv = document.getElementById("form-status");
+
+                    // Check if grecaptcha is available
+                    if (typeof grecaptcha === "undefined") {
+                        statusDiv.textContent =
+                            "reCAPTCHA is not loaded. Please refresh the page and try again.";
+                        return;
+                    }
+
                     const captchaResponse = grecaptcha.getResponse();
 
                     if (!captchaResponse) {
@@ -114,35 +122,14 @@
                         return;
                     }
 
-                    // Verify reCAPTCHA via backend
-                    let isVerified = false;
-                    try {
-                        const verifyRes = await fetch("/api/recaptcha-verify", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                recaptchaResponse: captchaResponse,
-                            }),
-                        });
-                        isVerified = await verifyRes.json();
-                    } catch (err) {
-                        isVerified = false;
-                    }
-
-                    if (!isVerified) {
-                        statusDiv.textContent =
-                            "CAPTCHA verification failed. Please try again.";
-                        grecaptcha.reset();
-                        return;
-                    }
-
                     statusDiv.textContent = "Sending...";
 
-                    // Send form data to backend for email sending
+                    // Send form data with reCAPTCHA token to backend
                     const formData = {
                         from_name: document.getElementById("name").value,
                         from_email: document.getElementById("email").value,
                         message: document.getElementById("message").value,
+                        recaptchaResponse: captchaResponse,
                     };
 
                     try {
@@ -151,20 +138,30 @@
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(formData),
                         });
+
+                        const result = await response.json();
+
                         if (response.ok) {
                             statusDiv.textContent =
                                 "Message sent successfully!";
                             document.getElementById("contact-form").reset();
-                            grecaptcha.reset();
+                            if (typeof grecaptcha !== "undefined") {
+                                grecaptcha.reset();
+                            }
                         } else {
                             statusDiv.textContent =
+                                result.error ||
                                 "Failed to send message. Please try again.";
-                            grecaptcha.reset();
+                            if (typeof grecaptcha !== "undefined") {
+                                grecaptcha.reset();
+                            }
                         }
                     } catch (error) {
                         statusDiv.textContent =
                             "Failed to send message. Please try again.";
-                        grecaptcha.reset();
+                        if (typeof grecaptcha !== "undefined") {
+                            grecaptcha.reset();
+                        }
                     }
                 });
         </script>

@@ -251,32 +251,33 @@ const recaptchaConfig = {
   verifyUrl: process.env.RECAPTCHA_VERIFY_URL,
 };
 
-// API endpoint to verify reCAPTCHA
-app.post("/api/recaptcha-verify", async (req, res) => {
+// Contact form endpoint using EmailJS REST API
+app.post("/api/contact", async (req, res) => {
+  const { from_name, from_email, message, recaptchaResponse } = req.body;
+  if (!from_name || !from_email || !message || !recaptchaResponse) {
+    return res
+      .status(400)
+      .json({ error: "Name, email, message, and reCAPTCHA are required." });
+  }
+
+  // Verify reCAPTCHA first
   try {
-    const { recaptchaResponse } = req.body;
-    const response = await fetch(recaptchaConfig.verifyUrl, {
+    const verifyResponse = await fetch(recaptchaConfig.verifyUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: `secret=${recaptchaConfig.secretKey}&response=${recaptchaResponse}`,
     });
-    const data = await response.json();
-    res.json(data.success);
-  } catch (err) {
-    res.json(false);
-  }
-});
+    const verifyData = await verifyResponse.json();
 
-// Contact form endpoint using EmailJS REST API
-app.post("/api/contact", async (req, res) => {
-  const { from_name, from_email, message } = req.body;
-  if (!from_name || !from_email || !message) {
-    return res
-      .status(400)
-      .json({ error: "Name, email, and message are required." });
+    if (!verifyData.success) {
+      return res.status(400).json({ error: "reCAPTCHA verification failed." });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: "reCAPTCHA verification error." });
   }
+
   try {
     const response = await fetch(
       "https://api.emailjs.com/api/v1.0/email/send",
