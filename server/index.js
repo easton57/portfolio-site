@@ -245,6 +245,64 @@ app.post("/api/projects", authenticateToken, async (req, res) => {
   }
 });
 
+// PUT endpoint to update a blog post (protected)
+app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, summary, excerpt } = req.body;
+
+    // Validate required fields
+    if (!title || !summary || !excerpt) {
+      return res
+        .status(400)
+        .json({ error: "Title, summary, and excerpt are required" });
+    }
+
+    const result = await pool.query(
+      "UPDATE blog_posts SET title = $1, summary = $2, excerpt = $3 WHERE id = $4 RETURNING *",
+      [title, summary, excerpt, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Blog post not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error updating blog post:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT endpoint to update a project (protected)
+app.put("/api/projects/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, summary, excerpt } = req.body;
+
+    // Validate required fields
+    if (!title || !summary || !excerpt) {
+      return res
+        .status(400)
+        .json({ error: "Title, summary, and excerpt are required" });
+    }
+
+    const result = await pool.query(
+      "UPDATE projects SET title = $1, summary = $2, excerpt = $3 WHERE id = $4 RETURNING *",
+      [title, summary, excerpt, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error updating project:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // reCAPTCHA verification configuration
 const recaptchaConfig = {
   secretKey: process.env.RECAPTCHA_SECRET_KEY,
