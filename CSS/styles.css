@@ -174,38 +174,45 @@ a:hover {
 }
 
 /* Blog posts styling */
-.blog-post {
+.blog-post,
+.project {
     margin-bottom: 20px;
     padding-bottom: 20px;
     border-bottom: 1px solid #3d3d3d;
 }
 
-.blog-post:last-child {
+.blog-post:last-child,
+.project:last-child {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-.blog-post h5 {
+.blog-post h5,
+.project h5 {
     margin: 0 0 10px 0;
     color: #ffffff;
 }
 
-.blog-post h5 a {
+.blog-post h5 a,
+.project h5 a {
     color: #ffffff;
     text-decoration: none;
 }
 
-.blog-post h5 a:hover {
+.blog-post h5 a:hover,
+.project h5 a:hover {
     color: #cccccc;
 }
 
-.blog-post p {
+.blog-post p,
+.project p {
     margin: 0 0 10px 0;
     color: #cccccc;
 }
 
-.blog-post small {
+.blog-post small,
+.project small {
     color: #888888;
     font-size: 0.8em;
 }
