@@ -146,21 +146,21 @@
                                 "Message sent successfully!";
                             document.getElementById("contact-form").reset();
                             if (typeof grecaptcha !== "undefined") {
-                                grecaptcha.reset();
+                                grecaptcha.enterprise.reset();
                             }
                         } else {
                             statusDiv.textContent =
                                 result.error ||
                                 "Failed to send message. Please try again.";
                             if (typeof grecaptcha !== "undefined") {
-                                grecaptcha.reset();
+                                grecaptcha.enterprise.reset();
                             }
                         }
                     } catch (error) {
                         statusDiv.textContent =
                             "Failed to send message. Please try again.";
                         if (typeof grecaptcha !== "undefined") {
-                            grecaptcha.reset();
+                            grecaptcha.enterprise.reset();
                         }
                     }
                 });
