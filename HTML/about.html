@@ -115,7 +115,7 @@
                         return;
                     }
 
-                    const captchaResponse = grecaptcha.getResponse();
+                    const captchaResponse = grecaptcha.enterprise.getResponse();
 
                     if (!captchaResponse) {
                         statusDiv.textContent = "Please complete the CAPTCHA";
