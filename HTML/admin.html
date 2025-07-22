@@ -33,7 +33,7 @@
                 <div class="content-body">
                     <div class="admin-header">
                         <h2>Admin Panel</h2>
-                        <p>Manage blog posts and projects</p>
+                        <p>Manage blog posts</p>
                         <button class="logout-btn" id="logoutBtn">
                             Logout
                         </button>
@@ -63,7 +63,6 @@
                                         Select content type...
                                     </option>
                                     <option value="blog">Blog Post</option>
-                                    <option value="project">Project</option>
                                 </select>
                             </div>
 
@@ -122,7 +121,6 @@
                                         Select content type...
                                     </option>
                                     <option value="blog">Blog Post</option>
-                                    <option value="project">Project</option>
                                 </select>
                             </div>
 
@@ -250,10 +248,7 @@
 
                     try {
                         const token = localStorage.getItem("authToken");
-                        const endpoint =
-                            contentType === "blog"
-                                ? "/api/all-posts"
-                                : "/api/projects";
+                        const endpoint = "/api/all-posts";
 
                         const response = await fetch(endpoint, {
                             headers: {
@@ -296,10 +291,7 @@
 
                     try {
                         const token = localStorage.getItem("authToken");
-                        const endpoint =
-                            itemType === "blog"
-                                ? `/api/blog/${itemId}`
-                                : `/api/project/${itemId}`;
+                        const endpoint = `/api/blog/${itemId}`;
 
                         const response = await fetch(endpoint, {
                             headers: {
@@ -362,10 +354,7 @@
                             throw new Error("No authentication token found");
                         }
 
-                        const endpoint =
-                            itemType === "blog"
-                                ? `/api/blogs/${itemId}`
-                                : `/api/projects/${itemId}`;
+                        const endpoint = `/api/blogs/${itemId}`;
 
                         const response = await fetch(endpoint, {
                             method: "PUT",
