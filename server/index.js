@@ -5,6 +5,8 @@ const { Pool } = require("pg");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -182,6 +184,9 @@ app.post("/api/blogs", authenticateToken, async (req, res) => {
       [title, summary, excerpt],
     );
 
+    // Generate RSS feed after successful post creation
+    await generateRSSFeed();
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error("Error creating blog post:", err);
@@ -217,6 +222,43 @@ app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Function to generate RSS feed from all blog posts
+async function generateRSSFeed() {
+  try {
+    const result = await pool.query(
+      "SELECT id, title, summary, excerpt, created_at FROM blog_posts ORDER BY created_at DESC"
+    );
+    const posts = result.rows;
+    const siteUrl = process.env.SITE_URL || "https://eastonseidel.com";
+    const rssItems = posts
+      .map(
+        (post) => `    <item>
+      <title><![CDATA[${post.title}]]></title>
+      <link>${siteUrl}/blog/${post.id}</link>
+      <description><![CDATA[${post.summary || post.excerpt}]]></description>
+      <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
+      <guid>${siteUrl}/blog/${post.id}</guid>
+    </item>`
+      )
+      .join("\n");
+    const rss = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Easton Seidel Blog</title>
+    <link>${siteUrl}</link>
+    <description>Latest blog posts from Easton Seidel</description>
+    <language>en-us</language>
+${rssItems}
+  </channel>
+</rss>`;
+    const rssPath = path.join(__dirname, "../public/rss.xml");
+    fs.mkdirSync(path.dirname(rssPath), { recursive: true });
+    fs.writeFileSync(rssPath, rss, "utf8");
+  } catch (err) {
+    console.error("Error generating RSS feed:", err);
+  }
+}
 
 // reCAPTCHA verification configuration
 const recaptchaConfig = {
@@ -282,6 +324,9 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ error: "Failed to send email." });
   }
 });
+
+// Serve static files from public directory (for RSS)
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

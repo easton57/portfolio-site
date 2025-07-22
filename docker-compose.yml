@@ -64,6 +64,7 @@ services:
       - ./CSS:/usr/share/nginx/html/CSS:ro
       - ./IMG:/usr/share/nginx/html/IMG:ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./public:/usr/share/nginx/html/public:ro
     networks:
       - internal
       - npm_network
