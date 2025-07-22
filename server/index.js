@@ -133,18 +133,6 @@ app.get("/api/recent-posts", async (req, res) => {
   }
 });
 
-app.get("/api/projects", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT id, title, summary, excerpt, created_at FROM projects ORDER BY created_at DESC",
-    );
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error fetching projects:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 app.get("/api/all-posts", async (req, res) => {
   try {
     const result = await pool.query(
@@ -177,26 +165,6 @@ app.get("/api/blog/:id", async (req, res) => {
   }
 });
 
-// GET endpoint to fetch a specific project by ID
-app.get("/api/project/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await pool.query(
-      "SELECT id, title, summary, excerpt, created_at FROM projects WHERE id = $1",
-      [id],
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Project not found" });
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("Error fetching project:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 // POST endpoint to create a new blog post (protected)
 app.post("/api/blogs", authenticateToken, async (req, res) => {
   try {
@@ -217,30 +185,6 @@ app.post("/api/blogs", authenticateToken, async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error("Error creating blog post:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// POST endpoint to create a new project (protected)
-app.post("/api/projects", authenticateToken, async (req, res) => {
-  try {
-    const { title, summary, excerpt } = req.body;
-
-    // Validate required fields
-    if (!title || !summary || !excerpt) {
-      return res
-        .status(400)
-        .json({ error: "Title, summary, and excerpt are required" });
-    }
-
-    const result = await pool.query(
-      "INSERT INTO projects (title, summary, excerpt) VALUES ($1, $2, $3) RETURNING *",
-      [title, summary, excerpt],
-    );
-
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error("Error creating project:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -270,35 +214,6 @@ app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error updating blog post:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// PUT endpoint to update a project (protected)
-app.put("/api/projects/:id", authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, summary, excerpt } = req.body;
-
-    // Validate required fields
-    if (!title || !summary || !excerpt) {
-      return res
-        .status(400)
-        .json({ error: "Title, summary, and excerpt are required" });
-    }
-
-    const result = await pool.query(
-      "UPDATE projects SET title = $1, summary = $2, excerpt = $3 WHERE id = $4 RETURNING *",
-      [title, summary, excerpt, id],
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Project not found" });
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("Error updating project:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
