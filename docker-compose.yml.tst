@@ -4,6 +4,7 @@ services:
     build: .
     container_name: test-portfolio_app
     restart: unless-stopped
+    user: root
     environment:
       NODE_ENV: production
       PORT: 3001
