@@ -222,14 +222,14 @@ app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Blog post not found" });
     }
 
+    // Generate RSS feed after successful post creation
+    await generateRSSFeed();
+
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error updating blog post:", err);
     res.status(500).json({ error: "Internal server error" });
   }
-
-  // Generate RSS feed after successful post creation
-  await generateRSSFeed();
 });
 
 // Function to generate RSS feed from all blog posts
