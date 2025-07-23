@@ -15,6 +15,12 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json()); // Add middleware to parse JSON requests
 
+// Serve static files
+app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
+app.use('/IMG', express.static(path.join(__dirname, '../IMG')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
+app.use('/', express.static(path.join(__dirname, '../HTML')));
+
 // PostgreSQL connection configuration
 const pool = new Pool({
   user: process.env.DB_USER,
