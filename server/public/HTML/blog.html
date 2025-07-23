@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Easton Seidel - Blog</title>
-        <link rel="stylesheet" href="../CSS/styles.css">
+        <link rel="stylesheet" href="../CSS/styles.css" />
     </head>
     <body>
         <div class="content">
@@ -25,35 +25,46 @@
                         <!-- Posts will be loaded here -->
                     </div>
                 </div>
-           </div>
+            </div>
 
             <div class="footer">
-                <p>Copyright 2025 Easton Seidel</p>
+                <table>
+                    <tr>
+                        <td><p>Copyright 2025 Easton Seidel</p></td>
+                        <td><a href="../rss/blog-feed.xml">RSS Feed</a></td>
+                    </tr>
+                </table>
             </div>
         </div>
 
         <script>
             async function loadBlogPosts() {
                 try {
-                    const response = await fetch('/api/all-posts');
+                    const response = await fetch("/api/all-posts");
                     const posts = await response.json();
-                    
-                    const postsContainer = document.getElementById('blog-posts');
-                    postsContainer.innerHTML = posts.map(post => `
+
+                    const postsContainer =
+                        document.getElementById("blog-posts");
+                    postsContainer.innerHTML = posts
+                        .map(
+                            (post) => `
                         <div class="blog-post">
                             <h3><a href="blog-post.html?id=${post.id}">${post.title}</a></h3>
                             <p>${post.summary}</p>
                             <small>${new Date(post.created_at).toLocaleDateString()}</small>
                         </div>
-                    `).join('');
+                    `,
+                        )
+                        .join("");
                 } catch (error) {
-                    console.error('Error loading blog posts:', error);
-                    document.getElementById('blog-posts').innerHTML = '<p>Error loading posts</p>';
+                    console.error("Error loading blog posts:", error);
+                    document.getElementById("blog-posts").innerHTML =
+                        "<p>Error loading posts</p>";
                 }
             }
 
             // Load posts when the page loads
-            document.addEventListener('DOMContentLoaded', loadBlogPosts);
+            document.addEventListener("DOMContentLoaded", loadBlogPosts);
         </script>
     </body>
 </html>
