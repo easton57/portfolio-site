@@ -227,6 +227,9 @@ app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
     console.error("Error updating blog post:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+
+  // Generate RSS feed after successful post creation
+  await generateRSSFeed();
 });
 
 // Function to generate RSS feed from all blog posts
