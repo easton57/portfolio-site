@@ -16,10 +16,10 @@ app.use(cors());
 app.use(express.json()); // Add middleware to parse JSON requests
 
 // Serve static files
-app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
-app.use('/IMG', express.static(path.join(__dirname, '../IMG')));
-app.use('/public', express.static(path.join(__dirname, '../public')));
-app.use('/', express.static(path.join(__dirname, '../HTML')));
+app.use("/CSS", express.static(path.join(__dirname, "./public/CSS")));
+app.use("/IMG", express.static(path.join(__dirname, "./public/IMG")));
+app.use("/rss", express.static(path.join(__dirname, "./public/rss")));
+app.use("/", express.static(path.join(__dirname, "./public/HTML")));
 
 // PostgreSQL connection configuration
 const pool = new Pool({
@@ -233,7 +233,7 @@ app.put("/api/blogs/:id", authenticateToken, async (req, res) => {
 async function generateRSSFeed() {
   try {
     const result = await pool.query(
-      "SELECT id, title, summary, excerpt, created_at FROM blog_posts ORDER BY created_at DESC"
+      "SELECT id, title, summary, excerpt, created_at FROM blog_posts ORDER BY created_at DESC",
     );
     const posts = result.rows;
     const siteUrl = process.env.SITE_URL || "https://eastonseidel.com";
@@ -245,7 +245,7 @@ async function generateRSSFeed() {
       <description><![CDATA[${post.summary || post.excerpt}]]></description>
       <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
       <guid>${siteUrl}/blog/${post.id}</guid>
-    </item>`
+    </item>`,
       )
       .join("\n");
     const rss = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -258,7 +258,7 @@ async function generateRSSFeed() {
 ${rssItems}
   </channel>
 </rss>`;
-    const rssPath = path.join(__dirname, "../public/rss.xml");
+    const rssPath = path.join(__dirname, "./public/rss/blog-feed.xml");
     fs.mkdirSync(path.dirname(rssPath), { recursive: true });
     fs.writeFileSync(rssPath, rss, "utf8");
   } catch (err) {
@@ -330,9 +330,6 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ error: "Failed to send email." });
   }
 });
-
-// Serve static files from public directory (for RSS)
-app.use(express.static(path.join(__dirname, "../public")));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

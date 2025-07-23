@@ -54,10 +54,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./HTML:/usr/src/app/HTML:ro
-      - ./CSS:/usr/src/app/CSS:ro
-      - ./IMG:/usr/src/app/IMG:ro
       - ./public:/usr/src/app/public:ro
+      - ./public/rss:/usr/src/app/public/rss:rw
 
   # Nginx Proxy Manager
   npm:
