@@ -244,10 +244,10 @@ async function generateRSSFeed() {
       .map(
         (post) => `    <item>
       <title><![CDATA[${post.title}]]></title>
-      <link>${siteUrl}/blog/${post.id}</link>
+      <link>${siteUrl}/blog-post.html?id=${post.id}</link>
       <description><![CDATA[${post.summary || post.excerpt}]]></description>
       <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-      <guid>${siteUrl}/blog/${post.id}</guid>
+      <guid>${siteUrl}/blog-post.html?id=${post.id}</guid>
     </item>`,
       )
       .join("\n");
