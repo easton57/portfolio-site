@@ -252,9 +252,10 @@ async function generateRSSFeed() {
       )
       .join("\n");
     const rss = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Easton Seidel Blog</title>
+    <atom:link href="https://eastonseidel.com/rss/blog-feed.xml" rel="self" type="application/rss+xml" />
     <link>${siteUrl}</link>
     <description>Latest blog posts from Easton Seidel</description>
     <language>en-us</language>
