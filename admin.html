@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin - Easton Seidel</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/admin.css" />
+    </head>
+    <body>
+        <div id="authOverlay" class="auth-overlay">
+            <div class="auth-message">
+                <div class="loading-spinner"></div>
+                <h3>Checking authentication...</h3>
+                <p>Please wait while we verify your access.</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <a href="index.html"><h1>Easton Seidel</h1></a>
+
+            <nav class="navbar">
+                <ul>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                </ul>
+            </nav>
+
+            <div
+                class="main-content full-width admin-content"
+                id="adminContent"
+            >
+                <div class="content-body">
+                    <div class="admin-header">
+                        <h2>Admin Panel</h2>
+                        <p>Manage blog posts</p>
+                        <button class="logout-btn" id="logoutBtn">
+                            Logout
+                        </button>
+                    </div>
+
+                    <div class="tab-container">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-tab="new">
+                                New
+                            </button>
+                            <button class="tab-btn" data-tab="edit">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="newTab">
+                        <form class="admin-form" id="adminForm">
+                            <div class="form-group">
+                                <label for="contentType">Content Type:</label>
+                                <select
+                                    id="contentType"
+                                    name="contentType"
+                                    required
+                                >
+                                    <option value="">
+                                        Select content type...
+                                    </option>
+                                    <option value="blog">Blog Post</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="title">Title:</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    maxlength="64"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="summary">Summary:</label>
+                                <input
+                                    type="text"
+                                    id="summary"
+                                    name="summary"
+                                    maxlength="128"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="excerpt"
+                                    >Content (HTML or text):</label
+                                >
+                                <textarea
+                                    id="excerpt"
+                                    name="excerpt"
+                                    required
+                                    placeholder="Enter your content here. You can use HTML tags for formatting."
+                                ></textarea>
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="submit-btn"
+                                id="submitBtn"
+                            >
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="editTab" style="display: none">
+                        <div class="admin-form">
+                            <div class="form-group">
+                                <label for="editContentType"
+                                    >Content Type:</label
+                                >
+                                <select id="editContentType" required>
+                                    <option value="">
+                                        Select content type...
+                                    </option>
+                                    <option value="blog">Blog Post</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editContentSelect"
+                                    >Select Content to Edit:</label
+                                >
+                                <select
+                                    id="editContentSelect"
+                                    required
+                                    disabled
+                                >
+                                    <option value="">Select an item...</option>
+                                </select>
+                            </div>
+
+                            <form
+                                class="edit-form"
+                                id="editForm"
+                                style="display: none"
+                            >
+                                <input type="hidden" id="editItemId" />
+                                <input type="hidden" id="editItemType" />
+
+                                <div class="form-group">
+                                    <label for="editTitle">Title:</label>
+                                    <input
+                                        type="text"
+                                        id="editTitle"
+                                        name="title"
+                                        maxlength="64"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editSummary">Summary:</label>
+                                    <input
+                                        type="text"
+                                        id="editSummary"
+                                        name="summary"
+                                        maxlength="128"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editExcerpt"
+                                        >Content (HTML or text):</label
+                                    >
+                                    <textarea
+                                        id="editExcerpt"
+                                        name="excerpt"
+                                        required
+                                        placeholder="Enter your content here. You can use HTML tags for formatting."
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="submit-btn"
+                                    id="editSubmitBtn"
+                                >
+                                    Update
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div
+                        id="statusMessage"
+                        class="status-message"
+                        style="display: none"
+                    ></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Copyright 2025 Easton Seidel</p>
+            </div>
+        </div>
+
+        <script type="module" src="/src/admin.js"></script>
+    </body>
+</html>

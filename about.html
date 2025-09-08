@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Easton Seidel - About</title>
-        <link rel="stylesheet" href="../CSS/styles.css" />
+        <link rel="stylesheet" href="/css/style.css" />
         <script
             src="https://www.google.com/recaptcha/enterprise.js"
             async
@@ -28,7 +28,7 @@
                 <div class="content-body">
                     <div class="about-grid">
                         <div class="about-section">
-                            <img src="../IMG/meAndWife.jpg" />
+                            <img src="/img/meAndWife.jpg" />
                             <p>
                                 If you'd like to contact me, you can use the
                                 form to the right or reach out on any of the
@@ -98,76 +98,12 @@
                 <table>
                     <tr>
                         <td><p>Copyright 2025 Easton Seidel</p></td>
-                        <td><a href="../rss/blog-feed.xml">RSS Feed</a></td>
+                        <td><a href="/rss/blog-feed.xml">RSS Feed</a></td>
                     </tr>
                 </table>
             </div>
         </div>
 
-        <script type="module">
-            document
-                .getElementById("contact-form")
-                .addEventListener("submit", async function (e) {
-                    e.preventDefault();
-
-                    const statusDiv = document.getElementById("form-status");
-
-                    // Check if grecaptcha is available
-                    if (typeof grecaptcha === "undefined") {
-                        statusDiv.textContent =
-                            "reCAPTCHA is not loaded. Please refresh the page and try again.";
-                        return;
-                    }
-
-                    const captchaResponse = grecaptcha.enterprise.getResponse();
-
-                    if (!captchaResponse) {
-                        statusDiv.textContent = "Please complete the CAPTCHA";
-                        return;
-                    }
-
-                    statusDiv.textContent = "Sending...";
-
-                    // Send form data with reCAPTCHA token to backend
-                    const formData = {
-                        from_name: document.getElementById("name").value,
-                        from_email: document.getElementById("email").value,
-                        message: document.getElementById("message").value,
-                        recaptchaResponse: captchaResponse,
-                    };
-
-                    try {
-                        const response = await fetch("/api/contact", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(formData),
-                        });
-
-                        const result = await response.json();
-
-                        if (response.ok) {
-                            statusDiv.textContent =
-                                "Message sent successfully!";
-                            document.getElementById("contact-form").reset();
-                            if (typeof grecaptcha !== "undefined") {
-                                grecaptcha.enterprise.reset();
-                            }
-                        } else {
-                            statusDiv.textContent =
-                                result.error ||
-                                "Failed to send message. Please try again.";
-                            if (typeof grecaptcha !== "undefined") {
-                                grecaptcha.enterprise.reset();
-                            }
-                        }
-                    } catch (error) {
-                        statusDiv.textContent =
-                            "Failed to send message. Please try again.";
-                        if (typeof grecaptcha !== "undefined") {
-                            grecaptcha.enterprise.reset();
-                        }
-                    }
-                });
-        </script>
+        <script type="module" src="/src/about.js"></script>
     </body>
 </html>

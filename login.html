@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Login - Easton Seidel</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/login.css">
+    </head>
+    <body>
+        <div class="content">
+            <a href="index.html"><h1>Easton Seidel</h1></a>
+
+            <div class="main-content full-width">
+                <div class="login-container">
+                    <div class="login-header">
+                        <h2>Admin Login</h2>
+                        <p>Please enter your credentials to access the admin panel</p>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required autocomplete="username">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required autocomplete="current-password">
+                        </div>
+
+                        <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+                    </form>
+
+                    <div id="errorMessage" class="error-message"></div>
+
+                    <div class="back-link">
+                        <a href="index.html">← Back to Home</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Copyright 2025 Easton Seidel</p>
+            </div>
+        </div>
+
+        <script type="module" src="/src/login.js"></script>
+    </body>
+</html>
