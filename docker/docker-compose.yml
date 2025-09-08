@@ -56,7 +56,6 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./server/public:/usr/src/app/public:ro
       - ./server/public/rss:/usr/src/app/public/rss:rw
 
   # Nginx Proxy Manager

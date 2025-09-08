@@ -1,7 +1,33 @@
-# Use official Node.js runtime as base image
-FROM node:18-alpine
+# Multi-stage build for Vite frontend and Node.js backend
 
-# Install build dependencies for native modules
+# Stage 1: Build Vite frontend
+FROM node:18-alpine AS frontend-builder
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy frontend package files
+COPY package*.json ./
+
+# Install frontend dependencies
+RUN npm ci
+
+# Copy frontend source code
+COPY src/ ./src/
+COPY *.html ./
+COPY vite.config.js ./
+COPY img/ ./img/
+
+# Build the frontend
+RUN npm run build
+
+# Stage 2: Node.js backend with built frontend
+FROM node:18-alpine AS backend
+
+# Install runtime dependencies for native modules
 RUN apk add --no-cache python3 make g++
 
 # Create app directory
@@ -11,17 +37,21 @@ WORKDIR /usr/src/app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy package files first for better caching
+# Copy backend package files
 COPY server/package*.json ./
 
-# Install dependencies and rebuild native modules for ARM64
+# Install backend dependencies and rebuild native modules
 RUN npm ci --only=production && npm rebuild && npm cache clean --force
 
-# Copy application code
+# Copy backend application code
 COPY server/ ./
 
-# Change ownership to non-root user
-RUN chown -R nodejs:nodejs /usr/src/app
+# Copy built frontend from previous stage
+COPY --from=frontend-builder /app/dist ./public
+
+# Create necessary directories and set permissions
+RUN mkdir -p /usr/src/app/public/rss && \
+    chown -R nodejs:nodejs /usr/src/app
 
 # Switch to non-root user
 USER nodejs
