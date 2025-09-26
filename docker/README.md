@@ -106,8 +106,6 @@ The Docker setup is optimized for production with:
 ├── package.json          # Backend dependencies
 ├── public/               # Built frontend files (from Vite)
 │   ├── index.html
-│   ├── about.html
-│   ├── blog.html
 │   ├── assets/
 │   └── rss/              # RSS feed directory (mounted volume)
 └── node_modules/         # Backend dependencies
