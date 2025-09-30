@@ -59,14 +59,14 @@ function About() {
   }
 
   return (
-    <>
-      <h2>About</h2>
-      <div className="main-content full-width">
-        <div className="content-body">
-          <div className="about-grid">
+    <div className="w-full">
+      <h2 className="text-white text-2xl font-bold mb-5">About</h2>
+      <div className="flex gap-5 my-5 w-full box-border">
+        <div className="bg-[#2d2d2d] p-5 rounded-md flex-[1] min-w-0 box-border">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="about-section">
-              <img src="/img/meAndWife.jpg" alt="Easton and his wife" />
-              <p>
+              <img src="/img/meAndWife.jpg" alt="Easton and his wife" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
+              <p className="m-0 overflow-hidden inline text-white">
                 If you'd like to contact me, you can use the
                 form to the right or reach out on any of the
                 social media links on the home page. The contact
@@ -75,7 +75,7 @@ function About() {
               </p>
               <br />
               <br />
-              <p>
+              <p className="m-0 overflow-hidden inline text-white">
                 I'm open to any and all offers for work or
                 colaboration if my skill set matches your needs.
                 While I'd like to start moving into professional
@@ -89,48 +89,51 @@ function About() {
               </p>
             </div>
             <div className="contact-section">
-              <h3>Contact Me</h3>
+              <h3 className="text-white text-xl font-bold mb-4">Contact Me</h3>
               <form id="contact-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="name">Name:</label>
+                <div className="mb-4">
+                  <label htmlFor="name" className="block mb-1 text-white font-bold">Name:</label>
                   <input
                     type="text"
                     id="name"
                     name="name"
                     required
+                    className="w-full p-2 border border-gray-600 rounded bg-[#2d2d2d] text-white"
                   />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="email">Email:</label>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block mb-1 text-white font-bold">Email:</label>
                   <input
                     type="email"
                     id="email"
                     name="email"
                     required
+                    className="w-full p-2 border border-gray-600 rounded bg-[#2d2d2d] text-white"
                   />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="message">Message:</label>
+                <div className="mb-4">
+                  <label htmlFor="message" className="block mb-1 text-white font-bold">Message:</label>
                   <textarea
                     id="message"
                     name="message"
                     required
+                    className="w-full p-2 border border-gray-600 rounded bg-[#2d2d2d] text-white h-36 resize-y"
                   ></textarea>
                 </div>
-                <div className="form-group">
+                <div className="mb-4">
                   <div
                     className="g-recaptcha"
                     data-sitekey="6LdDdHMrAAAAACAFBXAti9TAy03E3RHmcaxKYpZJ"
                   ></div>
                 </div>
-                <button type="submit">Send Message</button>
+                <button type="submit" className="bg-green-500 text-white px-5 py-2.5 border-none rounded cursor-pointer text-base hover:bg-green-600">Send Message</button>
               </form>
-              <div id="form-status">{status}</div>
+              <div id="form-status" className="mt-4 p-2.5 rounded">{status}</div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
