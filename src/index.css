@@ -19,6 +19,17 @@ body {
     height: auto;
 }
 
+/* Social media table centering */
+.social-media-table td {
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+.social-media-table td a {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 /* Image floating in content */
 .content-body img {
     max-width: 200px;
