@@ -51,7 +51,8 @@ function Home() {
       <div className="flex-[0.7] flex flex-col gap-5 min-w-0">
         <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
           <table className="w-full mx-auto">
-            <tr>
+            <tbody>
+              <tr>
               <td className="text-center px-2.5">
                 <a
                   href="https://www.linkedin.com/in/easton-seidel/"
@@ -66,6 +67,8 @@ function Home() {
                   />
                 </a>
               </td>
+              </tr>
+              <tr>
               <td className="text-center px-2.5">
                 <a
                   href="https://github.com/easton57"
@@ -80,6 +83,8 @@ function Home() {
                   />
                 </a>
               </td>
+              </tr>
+              <tr>
               <td className="text-center px-2.5">
                 <a
                   href="https://www.youtube.com/@eastonseidel5024"
@@ -94,7 +99,8 @@ function Home() {
                   />
                 </a>
               </td>
-            </tr>
+              </tr>
+            </tbody>
           </table>
         </div>
 

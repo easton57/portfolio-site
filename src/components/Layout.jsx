@@ -17,10 +17,12 @@ function Layout({ children }) {
 
       <div className="mt-10 text-center text-gray-500 text-sm w-full relative clear-both">
         <table className="mx-auto items-center">
+          <tbody>
           <tr>
             <td className="text-center px-2.5"><p className="m-0">Copyright 2025 Easton Seidel</p></td>
             <td className="text-center px-2.5"><a href="/rss/blog-feed.xml" className="text-white hover:text-gray-300">RSS Feed</a></td>
           </tr>
+          </tbody>
         </table>
       </div>
     </div>
