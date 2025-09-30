@@ -50,58 +50,54 @@ function Home() {
 
       <div className="flex-[0.7] flex flex-col gap-5 min-w-0">
         <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
-          <table className="w-full mx-auto">
-            <tbody>
-              <tr>
-              <td className="text-center px-2.5">
-                <a
-                  href="https://www.linkedin.com/in/easton-seidel/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-white hover:text-gray-300"
-                >
-                  <img
-                    src="/img/linkedin.png"
-                    className="social-media-icon"
-                    alt="LinkedIn"
-                  />
-                </a>
-              </td>
-              </tr>
-              <tr>
-              <td className="text-center px-2.5">
-                <a
-                  href="https://github.com/easton57"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-white hover:text-gray-300"
-                >
-                  <img
-                    src="/img/github.png"
-                    className="social-media-icon"
-                    alt="GitHub"
-                  />
-                </a>
-              </td>
-              </tr>
-              <tr>
-              <td className="text-center px-2.5">
-                <a
-                  href="https://www.youtube.com/@eastonseidel5024"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-white hover:text-gray-300"
-                >
-                  <img
-                    src="/img/youtube.png"
-                    className="social-media-icon"
-                    alt="YouTube"
-                  />
-                </a>
-              </td>
-              </tr>
-            </tbody>
-          </table>
+            <table className="w-full mx-auto">
+              <tbody>
+                <tr>
+                  <td className="text-center px-2.5">
+                    <a
+                      href="https://www.linkedin.com/in/easton-seidel/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-white hover:text-gray-300"
+                    >
+                      <img
+                        src="/img/linkedin.png"
+                        className="social-media-icon"
+                        alt="LinkedIn"
+                      />
+                    </a>
+                  </td>
+                  <td className="text-center px-2.5">
+                    <a
+                      href="https://github.com/easton57"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-white hover:text-gray-300"
+                    >
+                      <img
+                        src="/img/github.png"
+                        className="social-media-icon"
+                        alt="GitHub"
+                      />
+                    </a>
+                  </td>
+                  <td className="text-center px-2.5">
+                    <a
+                      href="https://www.youtube.com/@eastonseidel5024"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-white hover:text-gray-300"
+                    >
+                      <img
+                        src="/img/youtube.png"
+                        className="social-media-icon"
+                        alt="YouTube"
+                      />
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
         </div>
 
         <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
