@@ -76,7 +76,7 @@ services:
       - internal
       - npm_network
     ports:
-      - "3001:3001"
+      - "3001:3000"
     volumes:
       - ../server:/usr/src/app:ro
       - ../server/public/rss:/usr/src/app/public/rss:rw
