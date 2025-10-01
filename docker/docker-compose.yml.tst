@@ -74,6 +74,7 @@ services:
         condition: service_healthy
     networks:
       - internal
+      - npm_network
     ports:
       - "3001:3001"
     volumes:
