@@ -56,7 +56,7 @@ services:
     user: root
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3001
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-portfolio_test}
