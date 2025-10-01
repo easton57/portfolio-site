@@ -43,7 +43,7 @@ services:
       - ../public:/app/public:ro
       - ../index.html:/app/index.html:ro
       - ../vite.config.js:/app/vite.config.js:ro
-      - ../img:/app/img:ro
+      - ../src/img:/app/img:rw
       - /app/node_modules
 
   # Node.js Application (backend only)
