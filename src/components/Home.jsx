@@ -25,7 +25,7 @@ function Home() {
     <div className="w-full">
       <div className="flex gap-5 my-5 w-full box-border">
         <div className="bg-[#2d2d2d] p-5 rounded-md flex-[1.3] min-w-0 box-border">
-        <img src="/img/me.jpg" alt="Easton Seidel" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
+        <img src="/src/img/me.jpg" alt="Easton Seidel" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
         <p className="m-0 overflow-hidden inline text-white">
           I'm Easton Seidel. I'm a Systems Administrator and
           aspiring Software Engineer in Southern California.
@@ -61,7 +61,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/img/linkedin.png"
+                        src="/src/img/linkedin.png"
                         className="social-media-icon"
                         alt="LinkedIn"
                       />
@@ -75,7 +75,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/img/github.png"
+                        src="/src/img/github.png"
                         className="social-media-icon"
                         alt="GitHub"
                       />
@@ -89,7 +89,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/img/youtube.png"
+                        src="/src/img/youtube.png"
                         className="social-media-icon"
                         alt="YouTube"
                       />
