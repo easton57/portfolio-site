@@ -1,0 +1,374 @@
+@import "tailwindcss";
+
+/* Custom styles that can't be easily replaced with Tailwind */
+
+/* Global body styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding-bottom: 60px;
+}
+
+/* Social media icons */
+.social-media-icon {
+    width: 35px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Social media table centering */
+.social-media-table td {
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+.social-media-table td a {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Image floating in content */
+.content-body img {
+    max-width: 200px;
+    display: block;
+    height: auto;
+    float: left;
+    margin: 0 20px 10px 0;
+    clear: left;
+}
+
+/* Inline paragraph styling for image wrapping */
+.content-body p {
+    margin: 0;
+    overflow: hidden;
+    display: inline;
+}
+
+/* Loading spinner animation */
+.loading-spinner {
+    border: 3px solid #333;
+    border-top: 3px solid #ffffff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Admin content visibility */
+.admin-content {
+    display: none;
+}
+
+.admin-content.authenticated {
+    display: block;
+}
+
+/* Tab content visibility */
+.tab-content {
+    display: block;
+}
+
+/* Error message visibility */
+.error-message {
+    display: none;
+}
+
+/* Input styling to remove blue focus */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+/* Login page styles */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #2d2d2d;
+    padding: 40px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    color: #ffffff;
+    margin: 0 0 10px 0;
+}
+
+.login-header p {
+    color: #cccccc;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #3d3d3d;
+    border-radius: 3px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.login-btn {
+    width: 100%;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #cccccc;
+}
+
+.login-btn:disabled {
+    background-color: #666666;
+    cursor: not-allowed;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-link a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+/* Admin page styles */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.auth-message {
+    background-color: #2d2d2d;
+    padding: 40px;
+    border-radius: 5px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.auth-message h3 {
+    margin: 0 0 20px 0;
+}
+
+.auth-message p {
+    margin: 0 0 20px 0;
+    color: #cccccc;
+}
+
+.auth-message a {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #1a1a1a;
+    padding: 10px 20px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.auth-message a:hover {
+    background-color: #333333;
+}
+
+.logout-btn {
+    background-color: #5a2d2d;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 20px;
+}
+
+.logout-btn:hover {
+    background-color: #7a3d3d;
+}
+
+.admin-form {
+    background-color: #2d2d2d;
+    padding: 30px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #3d3d3d;
+    border-radius: 3px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ffffff;
+}
+
+.submit-btn {
+    background-color: #ffffff;
+    color: #1a1a1a;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #cccccc;
+}
+
+.submit-btn:disabled {
+    background-color: #666666;
+    cursor: not-allowed;
+}
+
+.status-message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.status-success {
+    background-color: #2d5a2d;
+    color: #ffffff;
+}
+
+.status-error {
+    background-color: #5a2d2d;
+    color: #ffffff;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.admin-header h2 {
+    color: #ffffff;
+    margin: 0;
+}
+
+.tab-container {
+    margin: 20px 0;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #3d3d3d;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    background-color: #1a1a1a;
+    color: #cccccc;
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background-color: #2d2d2d;
+    color: #ffffff;
+}
+
+.tab-btn.active {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.edit-form {
+    margin-top: 20px;
+}
+
+/* Mobile responsive adjustments */
+@media screen and (max-width: 768px) {
+    .social-media-icon {
+        width: 25px;
+    }
+    
+    /* For pages with sidebars, limit content-body height in mobile */
+    .main-content:not(.full-width) .content-body {
+        max-height: 65%;
+        overflow-y: auto;
+    }
+    
+    body {
+        padding-bottom: 0;
+    }
+}

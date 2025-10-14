@@ -15,12 +15,6 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json()); // Add middleware to parse JSON requests
 
-// Serve static files
-app.use("/CSS", express.static(path.join(__dirname, "./public/CSS")));
-app.use("/IMG", express.static(path.join(__dirname, "./public/IMG")));
-app.use("/rss", express.static(path.join(__dirname, "./public/rss")));
-app.use("/", express.static(path.join(__dirname, "./public/HTML")));
-
 // PostgreSQL connection configuration
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -244,10 +238,10 @@ async function generateRSSFeed() {
       .map(
         (post) => `    <item>
       <title><![CDATA[${post.title}]]></title>
-      <link>${siteUrl}/blog-post.html?id=${post.id}</link>
+      <link>${siteUrl}/blog-post?id=${post.id}</link>
       <description><![CDATA[${post.summary || post.excerpt}]]></description>
       <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-      <guid>${siteUrl}/blog-post.html?id=${post.id}</guid>
+      <guid>${siteUrl}/blog-post?id=${post.id}</guid>
     </item>`,
       )
       .join("\n");
@@ -255,7 +249,7 @@ async function generateRSSFeed() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Easton Seidel Blog</title>
-    <atom:link href="https://eastonseidel.com/rss/blog-feed.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${siteUrl}/rss/blog-feed.xml" rel="self" type="application/rss+xml" />
     <link>${siteUrl}</link>
     <description>Latest blog posts from Easton Seidel</description>
     <language>en-us</language>
@@ -269,6 +263,45 @@ ${rssItems}
     console.error("Error generating RSS feed:", err);
   }
 }
+
+// API endpoint to serve RSS feed
+app.get("/rss/blog-feed.xml", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, title, summary, excerpt, created_at FROM blog_posts ORDER BY created_at DESC",
+    );
+    const posts = result.rows;
+    const siteUrl = process.env.SITE_URL || "https://eastonseidel.com";
+    const rssItems = posts
+      .map(
+        (post) => `    <item>
+      <title><![CDATA[${post.title}]]></title>
+      <link>${siteUrl}/blog-post?id=${post.id}</link>
+      <description><![CDATA[${post.summary || post.excerpt}]]></description>
+      <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
+      <guid>${siteUrl}/blog-post?id=${post.id}</guid>
+    </item>`,
+      )
+      .join("\n");
+    const rss = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Easton Seidel Blog</title>
+    <atom:link href="${siteUrl}/rss/blog-feed.xml" rel="self" type="application/rss+xml" />
+    <link>${siteUrl}</link>
+    <description>Latest blog posts from Easton Seidel</description>
+    <language>en-us</language>
+${rssItems}
+  </channel>
+</rss>`;
+    
+    res.setHeader('Content-Type', 'application/rss+xml');
+    res.send(rss);
+  } catch (err) {
+    console.error("Error serving RSS feed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // reCAPTCHA verification configuration
 const recaptchaConfig = {
@@ -335,6 +368,9 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
+  // Generate RSS feed on startup
+  await generateRSSFeed();
+  console.log("RSS feed generated");
 });
