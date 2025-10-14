@@ -107,12 +107,14 @@ function Home() {
               <p className="text-gray-300">Loading posts...</p>
             ) : blogPosts.length > 0 ? (
               blogPosts.map((post) => (
-                <div key={post.id} className="mb-5 pb-5 border-b border-gray-600 last:border-b-0 last:mb-0 last:pb-0">
-                  <h5 className="m-0 mb-2.5 text-white">
-                    <Link to={`/blog-post?id=${post.id}`} className="text-white no-underline hover:text-gray-300">{post.title}</Link>
-                  </h5>
-                  <p className="m-0 mb-2.5 text-gray-300">{post.summary}</p>
-                  <small className="text-gray-500 text-xs">{new Date(post.created_at).toLocaleDateString()}</small>
+                <div key={post.id} className="mb-3 pb-3 border-b border-gray-600 last:border-b-0 last:mb-0 last:pb-0">
+                  <div className="flex justify-between items-start mb-2.5">
+                    <h5 className="m-0 text-white flex-1 pr-2">
+                      <Link to={`/blog-post?id=${post.id}`} className="text-white no-underline hover:text-gray-300">{post.title}</Link>
+                    </h5>
+                    <small className="text-gray-500 text-xs whitespace-nowrap">{new Date(post.created_at).toLocaleDateString()}</small>
+                  </div>
+                  <p className="m-0 text-gray-300">{post.summary}</p>
                 </div>
               ))
             ) : (
