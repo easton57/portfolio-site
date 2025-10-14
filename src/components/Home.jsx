@@ -71,7 +71,7 @@ function Home() {
                     className="font-bold text-white hover:text-gray-300 inline-block"
                   >
                     <img
-                      src="/src/img/linkedin.png"
+                      src={linkedinImg}
                       className="social-media-icon"
                       alt="LinkedIn"
                     />
@@ -85,7 +85,7 @@ function Home() {
                     className="font-bold text-white hover:text-gray-300 inline-block"
                   >
                     <img
-                      src="/src/img/github.png"
+                      src={githubImg}
                       className="social-media-icon"
                       alt="GitHub"
                     />
@@ -99,7 +99,7 @@ function Home() {
                     className="font-bold text-white hover:text-gray-300 inline-block"
                   >
                     <img
-                      src="/src/img/youtube.png"
+                      src={youtubeImg}
                       className="social-media-icon"
                       alt="YouTube"
                     />
