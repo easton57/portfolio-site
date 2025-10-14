@@ -1,3 +1,4 @@
+name: portfolio-site
 services:
   # PostgreSQL Database
   postgres:
@@ -35,8 +36,9 @@ services:
     restart: unless-stopped
     networks:
       - internal
+      - npm_network
     ports:
-      - "80:80"
+      - "80"
     depends_on:
       - server
 
@@ -69,8 +71,9 @@ services:
         condition: service_healthy
     networks:
       - internal
+      - npm_network
     ports:
-      - "3000:3000"
+      - "3000"
     volumes:
       - ../server:/usr/src/app:ro
       - ../server/public/rss:/usr/src/app/public/rss:rw
@@ -81,7 +84,6 @@ services:
     container_name: nginx_proxy_manager
     restart: unless-stopped
     ports:
-      - "80:80"
       - "81:81" # Admin UI
       - "443:443"
     environment:
