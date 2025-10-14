@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import meAndWifeImg from '../img/meAndWife.jpg'
 
 function About() {
   const [status, setStatus] = useState('')
@@ -65,7 +66,7 @@ function About() {
         <div className="bg-[#2d2d2d] p-5 rounded-md flex-[1] min-w-0 box-border">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div className="about-section">
-              <img src="/src/img/meAndWife.jpg" alt="Easton and his wife" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
+              <img src={meAndWifeImg} alt="Easton and his wife" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
               <p className="m-0 overflow-hidden inline text-white">
                 If you'd like to contact me, you can use the
                 form to the right or reach out on any of the

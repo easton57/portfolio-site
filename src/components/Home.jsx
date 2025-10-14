@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import meImg from '../img/me.jpg'
+import linkedinImg from '../img/linkedin.png'
+import githubImg from '../img/github.png'
+import youtubeImg from '../img/youtube.png'
 
 function Home() {
   const [blogPosts, setBlogPosts] = useState([])
@@ -25,7 +29,7 @@ function Home() {
     <div className="w-full">
       <div className="flex flex-col lg:flex-row gap-5 my-5 w-full box-border items-start">
         <div className="bg-[#2d2d2d] p-5 rounded-md w-full lg:flex-[1.3] min-w-0 box-border self-start">
-        <img src="/src/img/me.jpg" alt="Easton Seidel" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
+        <img src={meImg} alt="Easton Seidel" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
         <p className="m-0 overflow-hidden inline text-white">
           I'm Easton Seidel. I'm a Systems Administrator and
           aspiring Software Engineer in Southern California.
@@ -61,7 +65,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/src/img/linkedin.png"
+                        src={linkedinImg}
                         className="social-media-icon"
                         alt="LinkedIn"
                       />
@@ -75,7 +79,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/src/img/github.png"
+                        src={githubImg}
                         className="social-media-icon"
                         alt="GitHub"
                       />
@@ -89,7 +93,7 @@ function Home() {
                       className="font-bold text-white hover:text-gray-300 inline-block"
                     >
                       <img
-                        src="/src/img/youtube.png"
+                        src={youtubeImg}
                         className="social-media-icon"
                         alt="YouTube"
                       />

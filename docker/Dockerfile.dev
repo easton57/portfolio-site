@@ -17,7 +17,6 @@ RUN npm ci
 COPY src/ ./src/
 COPY *.html ./
 COPY vite.config.js ./
-COPY src/img/ ./img/
 
 # Expose port
 EXPOSE 3080

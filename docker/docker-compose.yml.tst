@@ -2,7 +2,7 @@ services:
   # PostgreSQL Database (same as production)
   postgres:
     image: postgres:15-alpine
-    container_name: test-portfolio_postgres
+    container_name: portfolio_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-portfolio_test}
@@ -27,7 +27,7 @@ services:
 
   # React frontend (development mode)
   app_test:
-    container_name: test-portfolio_app
+    container_name: portfolio_app
     build: 
       context: ../
       dockerfile: docker/Dockerfile.dev
@@ -51,7 +51,7 @@ services:
     build: 
       context: ../
       dockerfile: docker/Dockerfile.server
-    container_name: test-portfolio_server
+    container_name: portfolio_server
     restart: unless-stopped
     user: root
     environment:
