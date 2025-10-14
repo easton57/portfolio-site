@@ -4,6 +4,20 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://test-portfolio_server:3000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/rss': {
+        target: 'http://test-portfolio_server:3000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
   build: {
     rollupOptions: {
       input: {
