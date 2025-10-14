@@ -26,3 +26,4 @@ dist-ssr
 .env
 backups
 ignore
+blogfeed.xml
