@@ -25,14 +25,14 @@ function Blog() {
     <div className="w-full">
       <div className="flex gap-5 my-5 w-full box-border">
         <div className="bg-[#2d2d2d] p-5 rounded-md flex-[0_0_100%] min-w-0 box-border">
-        <h2 className="text-white text-2xl font-bold mb-5">Blog</h2>
+        <h2 className="text-white text-xl sm:text-2xl font-bold mb-5">Blog</h2>
         <div id="blog-posts">
           {loading ? (
             <p className="text-gray-300">Loading posts...</p>
           ) : blogPosts.length > 0 ? (
             blogPosts.map((post) => (
               <div key={post.id} className="mb-5 pb-5 border-b border-gray-600 last:border-b-0 last:mb-0 last:pb-0">
-                <h3 className="m-0 mb-2.5 text-white">
+                <h3 className="m-0 mb-2.5 text-white text-lg sm:text-xl">
                   <Link to={`/blog-post?id=${post.id}`} className="text-white no-underline hover:text-gray-300">{post.title}</Link>
                 </h3>
                 <p className="m-0 mb-2.5 text-gray-300">{post.summary}</p>

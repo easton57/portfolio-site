@@ -75,15 +75,15 @@ function BlogPost() {
         <div id="blog-post-content">
           <article className="max-w-full">
             <header className="mb-8 pb-5 border-b border-gray-600">
-              <h1 className="m-0 mb-4 text-white text-4xl">{post.title}</h1>
+              <h1 className="m-0 mb-4 text-white text-2xl sm:text-4xl">{post.title}</h1>
               <div className="mb-4">
                 <time dateTime={post.created_at} className="text-gray-500 text-sm">
                   {new Date(post.created_at).toLocaleDateString()}
                 </time>
               </div>
-              <p className="text-gray-300 text-lg leading-relaxed m-0">{post.summary}</p>
+              <p className="text-gray-300 text-base sm:text-lg leading-relaxed m-0">{post.summary}</p>
             </header>
-            <div className="text-white leading-loose text-base">
+            <div className="text-white leading-loose text-sm sm:text-base">
               {post.excerpt}
             </div>
           </article>

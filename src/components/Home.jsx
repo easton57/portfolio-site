@@ -23,8 +23,8 @@ function Home() {
 
   return (
     <div className="w-full">
-      <div className="flex gap-5 my-5 w-full box-border">
-        <div className="bg-[#2d2d2d] p-5 rounded-md flex-[1.3] min-w-0 box-border">
+      <div className="flex flex-col lg:flex-row gap-5 my-5 w-full box-border items-start">
+        <div className="bg-[#2d2d2d] p-5 rounded-md w-full lg:flex-[1.3] min-w-0 box-border self-start">
         <img src="/src/img/me.jpg" alt="Easton Seidel" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
         <p className="m-0 overflow-hidden inline text-white">
           I'm Easton Seidel. I'm a Systems Administrator and
@@ -48,7 +48,7 @@ function Home() {
         </p>
       </div>
 
-      <div className="flex-[0.7] flex flex-col gap-5 min-w-0">
+      <div className="w-full lg:flex-[0.7] flex flex-col gap-5 min-w-0">
         <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
             <table className="w-full mx-auto social-media-table">
               <tbody>

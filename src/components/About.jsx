@@ -60,10 +60,10 @@ function About() {
 
   return (
     <div className="w-full">
-      <h2 className="text-white text-2xl font-bold mb-5">About</h2>
-      <div className="flex gap-5 my-5 w-full box-border">
+      <h2 className="text-white text-xl sm:text-2xl font-bold mb-5">About</h2>
+      <div className="flex flex-col lg:flex-row gap-5 my-5 w-full box-border">
         <div className="bg-[#2d2d2d] p-5 rounded-md flex-[1] min-w-0 box-border">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div className="about-section">
               <img src="/src/img/meAndWife.jpg" alt="Easton and his wife" className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left" />
               <p className="m-0 overflow-hidden inline text-white">
@@ -89,7 +89,7 @@ function About() {
               </p>
             </div>
             <div className="contact-section">
-              <h3 className="text-white text-xl font-bold mb-4">Contact Me</h3>
+              <h3 className="text-white text-lg sm:text-xl font-bold mb-4">Contact Me</h3>
               <form id="contact-form" onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label htmlFor="name" className="block mb-1 text-white font-bold">Name:</label>
