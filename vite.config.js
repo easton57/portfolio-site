@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://test-portfolio_server:3000',
+        target: 'http://portfolio_server:3000',
         changeOrigin: true,
         secure: false
       },
       '/rss': {
-        target: 'http://test-portfolio_server:3000',
+        target: 'http://portfolio_server:3000',
         changeOrigin: true,
         secure: false
       }
