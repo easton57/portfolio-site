@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 function BlogPost() {
   const [searchParams] = useSearchParams();
@@ -91,7 +93,12 @@ function BlogPost() {
               </p>
             </header>
             <div className="text-white leading-loose text-sm sm:text-base prose prose-invert max-w-none">
-              <ReactMarkdown>{post.excerpt}</ReactMarkdown>
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+              >
+                {post.excerpt}
+              </ReactMarkdown>
             </div>
           </article>
         </div>

@@ -579,6 +579,7 @@ function Admin() {
                         onChange={setNewContent}
                         height={300}
                         data-color-mode="dark"
+                        preview="edit"
                       />
                     </div>
                   </div>
@@ -777,6 +778,7 @@ function Admin() {
                         onChange={setEditContent}
                         height={300}
                         data-color-mode="dark"
+                        preview="edit"
                       />
                     </div>
                   </div>

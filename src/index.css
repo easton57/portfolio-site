@@ -369,6 +369,21 @@ select:focus {
     margin-bottom: 0.5em;
 }
 
+.prose h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.prose h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.prose h3 {
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
 .prose p {
     margin-bottom: 1em;
     color: #ffffff;
@@ -423,6 +438,22 @@ select:focus {
 .prose em {
     font-style: italic;
     color: #ffffff;
+}
+
+/* Force markdown elements to be visible */
+.prose-invert h1, .prose-invert h2, .prose-invert h3, .prose-invert h4, .prose-invert h5, .prose-invert h6 {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
+.prose-invert p {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
 }
 
 /* Preview styling */
