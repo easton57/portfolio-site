@@ -15,6 +15,11 @@ export default defineConfig({
         target: 'http://portfolio_server:3000',
         changeOrigin: true,
         secure: false
+      },
+      '/uploads': {
+        target: 'http://portfolio_server:3000',
+        changeOrigin: true,
+        secure: false
       }
     }
   },

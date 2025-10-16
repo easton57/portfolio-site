@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,50 @@ const port = process.env.PORT || 3000;
 // Enable CORS
 app.use(cors());
 app.use(express.json()); // Add middleware to parse JSON requests
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const publicDir = path.join(__dirname, 'public');
+    const uploadDir = path.join(publicDir, 'uploads');
+    try {
+      // Create public directory if it doesn't exist
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+        console.log('Created public directory:', publicDir);
+      }
+      // Create uploads directory if it doesn't exist
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log('Created uploads directory:', uploadDir);
+      }
+      cb(null, uploadDir);
+    } catch (error) {
+      console.error('Error creating uploads directory:', error);
+      cb(error, null);
+    }
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Check if file is an image
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 // PostgreSQL connection configuration
 const pool = new Pool({
@@ -367,6 +412,102 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ error: "Failed to send email." });
   }
 });
+
+// Image upload endpoint
+app.post('/api/upload-image', authenticateToken, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    console.log('Image uploaded successfully:', req.file.filename);
+    console.log('File saved to:', req.file.path);
+
+    // Return the URL where the image can be accessed
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ 
+      success: true, 
+      imageUrl: imageUrl,
+      filename: req.file.filename 
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
+// Error handling middleware for multer
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    console.error('Multer error:', error);
+    return res.status(400).json({ error: `Upload error: ${error.message}` });
+  } else if (error) {
+    console.error('Upload error:', error);
+    return res.status(500).json({ error: 'Failed to upload image' });
+  }
+  next();
+});
+
+// API endpoint to get available images
+app.get('/api/available-images', async (req, res) => {
+  try {
+    const images = [];
+    
+    // Get images from src/img directory (static assets)
+    const srcImgPath = path.join(__dirname, '..', 'src', 'img');
+    if (fs.existsSync(srcImgPath)) {
+      try {
+        const srcImgFiles = fs.readdirSync(srcImgPath)
+          .filter(file => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file))
+          .map(file => ({
+            name: file,
+            url: `/src/img/${file}`,
+            type: 'static',
+            path: path.join(srcImgPath, file)
+          }));
+        images.push(...srcImgFiles);
+      } catch (err) {
+        console.log('Could not read src/img directory:', err.message);
+      }
+    } else {
+      console.log('src/img directory does not exist');
+    }
+    
+    // Get images from uploads directory
+    const uploadsPath = path.join(__dirname, 'public', 'uploads');
+    if (fs.existsSync(uploadsPath)) {
+      try {
+        const uploadFiles = fs.readdirSync(uploadsPath)
+          .filter(file => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file))
+          .map(file => ({
+            name: file,
+            url: `/uploads/${file}`,
+            type: 'uploaded',
+            path: path.join(uploadsPath, file)
+          }));
+        images.push(...uploadFiles);
+      } catch (err) {
+        console.log('Could not read uploads directory:', err.message);
+      }
+    } else {
+      console.log('uploads directory does not exist');
+    }
+    
+    // Sort images by name
+    images.sort((a, b) => a.name.localeCompare(b.name));
+    
+    res.json(images);
+  } catch (error) {
+    console.error('Error fetching available images:', error);
+    res.status(500).json({ error: 'Failed to fetch available images' });
+  }
+});
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// Serve static images from src/img
+app.use('/src/img', express.static(path.join(__dirname, '..', 'src', 'img')));
 
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);

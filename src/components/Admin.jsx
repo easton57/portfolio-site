@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
+import AvailableImagesList from "./AvailableImagesList";
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -9,7 +11,174 @@ function Admin() {
   const [submitMessage, setSubmitMessage] = useState("");
   const [posts, setPosts] = useState([]);
   const [selectedPostId, setSelectedPostId] = useState("");
+  const [newContent, setNewContent] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageUploadTrigger, setImageUploadTrigger] = useState(0);
   const navigate = useNavigate();
+
+  // Image handling functions
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setImageUrl(url);
+    if (url) {
+      setImagePreview(url);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      const validFiles = [];
+      const invalidFiles = [];
+      
+      files.forEach(file => {
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+          invalidFiles.push(`${file.name} - not an image file`);
+          return;
+        }
+        
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          invalidFiles.push(`${file.name} - file too large (max 5MB)`);
+          return;
+        }
+        
+        validFiles.push(file);
+      });
+      
+      if (invalidFiles.length > 0) {
+        setSubmitMessage(`Error: ${invalidFiles.join(', ')}`);
+      }
+      
+      if (validFiles.length > 0) {
+        setUploadedImages(validFiles);
+        
+        // Create preview for first file
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(validFiles[0]);
+      }
+    }
+  };
+
+  const uploadImageToServer = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const token = localStorage.getItem("authToken");
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Check if response has content before trying to parse JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          return data.imageUrl;
+        } else {
+          // If not JSON, try to get text response
+          const text = await response.text();
+          console.error("Server returned non-JSON response:", text);
+          throw new Error("Server returned invalid response format");
+        }
+      } else {
+        // Try to parse error response as JSON, fallback to text
+        try {
+          const error = await response.json();
+          throw new Error(error.error || "Upload failed");
+        } catch (jsonError) {
+          const text = await response.text();
+          throw new Error(`Upload failed: ${text || response.statusText}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setSubmitMessage(`Error: ${error.message}`);
+      return null;
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const insertImageIntoEditor = async (editorContent, setEditorContent) => {
+    let imageUrlsToUse = [];
+    
+    // If we have uploaded files, upload them first
+    if (uploadedImages.length > 0) {
+      for (const file of uploadedImages) {
+        const imageUrl = await uploadImageToServer(file);
+        if (imageUrl) {
+          imageUrlsToUse.push(imageUrl);
+        }
+      }
+    } else if (uploadedImage) {
+      const imageUrl = await uploadImageToServer(uploadedImage);
+      if (imageUrl) {
+        imageUrlsToUse.push(imageUrl);
+      }
+    } else if (imageUrl) {
+      imageUrlsToUse.push(imageUrl);
+    }
+    
+    if (imageUrlsToUse.length > 0) {
+      const imageMarkdowns = imageUrlsToUse.map(url => `![Image](${url})`).join('\n');
+      const newContent = editorContent + '\n' + imageMarkdowns;
+      setEditorContent(newContent);
+      setImageUrl("");
+      setImagePreview("");
+      setUploadedImage(null);
+      setUploadedImages([]);
+      
+      // Trigger refresh of available images list
+      setImageUploadTrigger(prev => prev + 1);
+    }
+  };
+
+  const handleImageInsert = (imageMarkdown, editorContent, setEditorContent) => {
+    const newContent = editorContent + '\n' + imageMarkdown;
+    setEditorContent(newContent);
+  };
+
+  const clearNewForm = () => {
+    document.getElementById("newForm").reset();
+    setNewContent("");
+    setImageUrl("");
+    setImagePreview("");
+    setUploadedImage(null);
+    setUploadedImages([]);
+  };
+
+  const clearEditForm = () => {
+    document.getElementById("editForm").reset();
+    setEditContent("");
+    setImageUrl("");
+    setImagePreview("");
+    setUploadedImage(null);
+    setUploadedImages([]);
+    setSelectedPostId("");
+    document.getElementById("editContentSelect").value = "";
+    document.getElementById("editForm").style.display = "none";
+  };
 
   useEffect(() => {
     checkAuthentication();
@@ -82,7 +251,7 @@ function Admin() {
       if (response.ok) {
         setSubmitMessage("Post created successfully!");
         // Clear form
-        document.getElementById("newForm").reset();
+        clearNewForm();
         // Refresh posts list
         fetchPosts();
       } else {
@@ -129,7 +298,7 @@ function Admin() {
     const formData = {
       title: e.target.title.value,
       summary: e.target.summary.value,
-      excerpt: e.target.excerpt.value,
+      excerpt: newContent,
     };
 
     await createPost(formData);
@@ -149,7 +318,7 @@ function Admin() {
     const formData = {
       title: e.target.title.value,
       summary: e.target.summary.value,
-      excerpt: e.target.excerpt.value,
+      excerpt: editContent,
     };
 
     await updatePost(selectedPostId, formData);
@@ -168,7 +337,7 @@ function Admin() {
           // Populate edit form
           document.getElementById("editTitle").value = post.title;
           document.getElementById("editSummary").value = post.summary;
-          document.getElementById("editExcerpt").value = post.excerpt;
+          setEditContent(post.excerpt || "");
           document.getElementById("editForm").style.display = "block";
         }
       } catch (error) {
@@ -185,7 +354,7 @@ function Admin() {
         id="authOverlay"
         className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 flex justify-center items-center z-[1000]"
       >
-        <div className="bg-[#2d2d2d] p-10 rounded-md text-center text-white">
+        <div className="bg-[#1a1a1a] p-10 rounded-md text-center text-white">
           <div className="loading-spinner"></div>
           <h3 className="m-0 mb-5 text-xl">Checking authentication...</h3>
           <p className="m-0 mb-5 text-gray-300">
@@ -203,13 +372,17 @@ function Admin() {
   return (
     <div className="w-full">
       <div
-        className={`flex gap-5 my-5 w-full box-border admin-content ${isAuthenticated ? 'authenticated' : ''}`}
+        className={`flex gap-5 my-5 w-full box-border admin-content ${
+          isAuthenticated ? "authenticated" : ""
+        }`}
         id="adminContent"
       >
         <div className="bg-[#2d2d2d] p-3 sm:p-5 rounded-md flex-[0_0_100%] min-w-0 box-border">
           <div className="text-center mb-8">
             <h2 className="text-white m-0 text-xl sm:text-2xl">Admin Panel</h2>
-            <p className="text-gray-300 mb-4 text-sm sm:text-base">Manage blog posts</p>
+            <p className="text-gray-300 mb-4 text-sm sm:text-base">
+              Manage blog posts
+            </p>
             <button
               className="bg-red-800 text-white px-3 sm:px-4 py-2 border-none rounded cursor-pointer text-xs sm:text-sm ml-3 sm:ml-5 hover:bg-red-700"
               id="logoutBtn"
@@ -218,11 +391,13 @@ function Admin() {
               Logout
             </button>
             {submitMessage && (
-              <div className={`mt-4 p-3 rounded ${
-                submitMessage.includes("Error") 
-                  ? "bg-red-600 text-white" 
-                  : "bg-green-600 text-white"
-              }`}>
+              <div
+                className={`mt-4 p-3 rounded ${
+                  submitMessage.includes("Error")
+                    ? "bg-red-600 text-white"
+                    : "bg-green-600 text-white"
+                }`}
+              >
                 {submitMessage}
               </div>
             )}
@@ -257,7 +432,11 @@ function Admin() {
                 <h3 className="text-white text-lg sm:text-xl mb-4">
                   Create New Blog Post
                 </h3>
-                <form id="newForm" className="bg-[#2d2d2d] p-4 sm:p-8 rounded-md my-5" onSubmit={handleNewSubmit}>
+                <form
+                  id="newForm"
+                  className="bg-[#2d2d2d] p-4 sm:p-8 rounded-md my-5"
+                  onSubmit={handleNewSubmit}
+                >
                   <div className="mb-5">
                     <label
                       htmlFor="newTitle"
@@ -270,7 +449,7 @@ function Admin() {
                       id="newTitle"
                       name="title"
                       required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border focus:outline-none focus:border-white"
+                      className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
                     />
                   </div>
                   <div className="mb-5">
@@ -285,9 +464,108 @@ function Admin() {
                       id="newSummary"
                       name="summary"
                       required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border focus:outline-none focus:border-white"
+                      className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
                     />
                   </div>
+                  <div className="mb-5">
+                    <label className="block mb-1 font-bold text-white">
+                      Add Image:
+                    </label>
+
+                    {/* File Upload Section */}
+                    <div className="mb-3">
+                      <label className="block mb-2 text-sm text-gray-300">
+                        Upload from local storage:
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileUpload}
+                        className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                      />
+                      {isUploading && (
+                        <div className="mt-2">
+                          <div className="bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-sm text-gray-300 mt-1">
+                            Uploading image...
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* URL Input Section */}
+                    <div className="mb-2">
+                      <label className="block mb-2 text-sm text-gray-300">
+                        Or enter image URL:
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          placeholder="Enter image URL..."
+                          value={imageUrl}
+                          onChange={handleImageUrlChange}
+                          className="flex-1 p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => insertImageIntoEditor(newContent, setNewContent)}
+                          disabled={!imageUrl && !uploadedImage && uploadedImages.length === 0}
+                          className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                        >
+                          Insert Image{uploadedImages.length > 1 ? 's' : ''}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Image Preview */}
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="max-w-xs max-h-32 object-contain border rounded"
+                          onError={() => setImagePreview("")}
+                        />
+                        <div className="mt-1 text-xs text-gray-400">
+                          {uploadedImages.length > 0
+                            ? `${uploadedImages.length} file(s) selected: ${uploadedImages.map(f => f.name).join(', ')}`
+                            : uploadedImage
+                            ? `Local file: ${uploadedImage.name}`
+                            : "URL preview"}
+                        </div>
+                        {uploadedImages.length > 0 && (
+                          <div className="mt-1 text-xs text-blue-400">
+                            Will be uploaded to: <code>/uploads/</code>
+                            {uploadedImages.map((file, index) => (
+                              <div key={index} className="ml-2">
+                                • <code>{file.name}</code>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {uploadedImage && uploadedImages.length === 0 && (
+                          <div className="mt-1 text-xs text-blue-400">
+                            Will be uploaded to: <code>/uploads/{uploadedImage.name}</code>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Available Images List */}
+                  <div className="mb-5">
+                    <AvailableImagesList 
+                      onImageInsert={(imageMarkdown) => handleImageInsert(imageMarkdown, newContent, setNewContent)}
+                      refreshTrigger={imageUploadTrigger}
+                    />
+                  </div>
+                  
                   <div className="mb-5">
                     <label
                       htmlFor="newExcerpt"
@@ -295,20 +573,31 @@ function Admin() {
                     >
                       Content:
                     </label>
-                    <textarea
-                      id="newExcerpt"
-                      name="excerpt"
-                      required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border min-h-[200px] resize-y focus:outline-none focus:border-white"
-                    ></textarea>
+                    <div className="bg-[#2d2d2d] rounded border border-gray-600">
+                      <MDEditor
+                        value={newContent}
+                        onChange={setNewContent}
+                        height={300}
+                        data-color-mode="dark"
+                      />
+                    </div>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Creating..." : "Create Post"}
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? "Creating..." : "Create Post"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearNewForm}
+                      className="bg-gray-600 text-white px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-500"
+                    >
+                      Clear Form
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
@@ -328,7 +617,7 @@ function Admin() {
                   <select
                     id="editContentSelect"
                     onChange={handlePostSelect}
-                    className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border focus:outline-none focus:border-white"
+                    className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
                   >
                     <option value="">Select an item...</option>
                     {posts.map((post) => (
@@ -358,7 +647,7 @@ function Admin() {
                       id="editTitle"
                       name="title"
                       required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border focus:outline-none focus:border-white"
+                      className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
                     />
                   </div>
                   <div className="mb-5">
@@ -373,9 +662,108 @@ function Admin() {
                       id="editSummary"
                       name="summary"
                       required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border focus:outline-none focus:border-white"
+                      className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
                     />
                   </div>
+                  <div className="mb-5">
+                    <label className="block mb-1 font-bold text-white">
+                      Add Image:
+                    </label>
+
+                    {/* File Upload Section */}
+                    <div className="mb-3">
+                      <label className="block mb-2 text-sm text-gray-300">
+                        Upload from local storage:
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileUpload}
+                        className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                      />
+                      {isUploading && (
+                        <div className="mt-2">
+                          <div className="bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-sm text-gray-300 mt-1">
+                            Uploading image...
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* URL Input Section */}
+                    <div className="mb-2">
+                      <label className="block mb-2 text-sm text-gray-300">
+                        Or enter image URL:
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          placeholder="Enter image URL..."
+                          value={imageUrl}
+                          onChange={handleImageUrlChange}
+                          className="flex-1 p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => insertImageIntoEditor(editContent, setEditContent)}
+                          disabled={!imageUrl && !uploadedImage && uploadedImages.length === 0}
+                          className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                        >
+                          Insert Image{uploadedImages.length > 1 ? 's' : ''}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Image Preview */}
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="max-w-xs max-h-32 object-contain border rounded"
+                          onError={() => setImagePreview("")}
+                        />
+                        <div className="mt-1 text-xs text-gray-400">
+                          {uploadedImages.length > 0
+                            ? `${uploadedImages.length} file(s) selected: ${uploadedImages.map(f => f.name).join(', ')}`
+                            : uploadedImage
+                            ? `Local file: ${uploadedImage.name}`
+                            : "URL preview"}
+                        </div>
+                        {uploadedImages.length > 0 && (
+                          <div className="mt-1 text-xs text-blue-400">
+                            Will be uploaded to: <code>/uploads/</code>
+                            {uploadedImages.map((file, index) => (
+                              <div key={index} className="ml-2">
+                                • <code>{file.name}</code>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {uploadedImage && uploadedImages.length === 0 && (
+                          <div className="mt-1 text-xs text-blue-400">
+                            Will be uploaded to: <code>/uploads/{uploadedImage.name}</code>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Available Images List */}
+                  <div className="mb-5">
+                    <AvailableImagesList 
+                      onImageInsert={(imageMarkdown) => handleImageInsert(imageMarkdown, editContent, setEditContent)}
+                      refreshTrigger={imageUploadTrigger}
+                    />
+                  </div>
+                  
                   <div className="mb-5">
                     <label
                       htmlFor="editExcerpt"
@@ -383,20 +771,31 @@ function Admin() {
                     >
                       Content:
                     </label>
-                    <textarea
-                      id="editExcerpt"
-                      name="excerpt"
-                      required
-                      className="w-full p-2.5 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border min-h-[200px] resize-y focus:outline-none focus:border-white"
-                    ></textarea>
+                    <div className="bg-[#2d2d2d] rounded border border-gray-600">
+                      <MDEditor
+                        value={editContent}
+                        onChange={setEditContent}
+                        height={300}
+                        data-color-mode="dark"
+                      />
+                    </div>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Updating..." : "Update Post"}
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? "Updating..." : "Update Post"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearEditForm}
+                      className="bg-gray-600 text-white px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-500"
+                    >
+                      Clear Form
+                    </button>
+                  </div>
                 </form>
               </div>
             )}

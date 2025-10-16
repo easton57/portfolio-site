@@ -10,6 +10,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Install npm@11.6.2
+RUN npm install -g npm@11.6.2
+
 # Install dependencies
 RUN npm ci
 

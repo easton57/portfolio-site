@@ -22,6 +22,7 @@ COPY server/ ./
 
 # Create necessary directories and set permissions
 RUN mkdir -p /usr/src/app/public/rss && \
+    mkdir -p /usr/src/app/public/uploads && \
     chown -R nodejs:nodejs /usr/src/app
 
 # Switch to non-root user
