@@ -14,6 +14,12 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy backend package files
 COPY server/package*.json ./
 
+# Install npm@11.6.2
+RUN npm install -g npm@11.6.2
+
+# This seems to get missed by the npm ci command
+RUN npm install multer
+
 # Install backend dependencies
 RUN npm ci
 
