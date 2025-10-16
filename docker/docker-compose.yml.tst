@@ -79,6 +79,7 @@ services:
     volumes:
       - ../server:/usr/src/app:ro
       - ../server/public/rss:/usr/src/app/public/rss:rw
+      - ../server/public/uploads:/usr/src/app/public/uploads:rw
 
 volumes:
   postgres_test_data:

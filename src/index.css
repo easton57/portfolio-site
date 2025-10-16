@@ -356,6 +356,131 @@ select:focus {
     margin-top: 20px;
 }
 
+/* Markdown styling for blog posts */
+.prose {
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.prose p {
+    margin-bottom: 1em;
+    color: #ffffff;
+}
+
+.prose ul, .prose ol {
+    margin-bottom: 1em;
+    padding-left: 2em;
+    color: #ffffff;
+}
+
+.prose blockquote {
+    border-left: 4px solid #555555;
+    padding-left: 1em;
+    margin: 1em 0;
+    font-style: italic;
+    color: #cccccc;
+}
+
+.prose code {
+    background-color: #404040;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    color: #ffffff;
+}
+
+.prose pre {
+    background-color: #404040;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.prose img {
+    max-width: 100%;
+    height: auto;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+
+.prose a {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.prose strong {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.prose em {
+    font-style: italic;
+    color: #ffffff;
+}
+
+/* Preview styling */
+.prose:not(.prose-invert) {
+    color: #333;
+    line-height: 1.6;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #222;
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.prose p {
+    margin-bottom: 1em;
+}
+
+.prose ul, .prose ol {
+    margin-bottom: 1em;
+    padding-left: 2em;
+}
+
+.prose blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin: 1em 0;
+    font-style: italic;
+    color: #666;
+}
+
+.prose img {
+    max-width: 100%;
+    height: auto;
+    margin: 1em 0;
+    border-radius: 4px;
+}
+
+.prose a {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.prose code {
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.prose pre {
+    background-color: #f5f5f5;
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
 /* Mobile responsive adjustments */
 @media screen and (max-width: 768px) {
     .social-media-icon {
@@ -370,5 +495,14 @@ select:focus {
     
     body {
         padding-bottom: 0;
+    }
+    
+    /* MDEditor responsive adjustments */
+    .w-md-editor {
+        font-size: 14px;
+    }
+    
+    .w-md-editor-text-input {
+        font-size: 14px;
     }
 }

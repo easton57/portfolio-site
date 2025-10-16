@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 function BlogPost() {
   const [searchParams] = useSearchParams();
@@ -89,8 +90,8 @@ function BlogPost() {
                 {post.summary}
               </p>
             </header>
-            <div className="text-white leading-loose text-sm sm:text-base">
-              {post.excerpt}
+            <div className="text-white leading-loose text-sm sm:text-base prose prose-invert max-w-none">
+              <ReactMarkdown>{post.excerpt}</ReactMarkdown>
             </div>
           </article>
         </div>
