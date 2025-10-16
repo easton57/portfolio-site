@@ -1,8 +1,42 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import meAndWifeImg from '../img/meAndWife.jpg'
 
 function About() {
   const [status, setStatus] = useState('')
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
+
+  useEffect(() => {
+    // Function to initialize reCAPTCHA
+    const initializeRecaptcha = () => {
+      if (typeof grecaptcha !== 'undefined' && grecaptcha.enterprise) {
+        grecaptcha.enterprise.ready(() => {
+          setRecaptchaLoaded(true)
+          // Render the reCAPTCHA widget
+          grecaptcha.enterprise.render('recaptcha-container', {
+            sitekey: '6LdDdHMrAAAAACAFBXAti9TAy03E3RHmcaxKYpZJ',
+            theme: 'dark'
+          })
+        })
+      } else {
+        // If grecaptcha is not loaded yet, try again in 100ms
+        setTimeout(initializeRecaptcha, 100)
+      }
+    }
+
+    // Start initialization
+    initializeRecaptcha()
+
+    // Cleanup function
+    return () => {
+      if (typeof grecaptcha !== 'undefined' && grecaptcha.enterprise) {
+        try {
+          grecaptcha.enterprise.reset()
+        } catch (error) {
+          console.log('reCAPTCHA cleanup error:', error)
+        }
+      }
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -122,10 +156,10 @@ function About() {
                   ></textarea>
                 </div>
                 <div className="mb-4">
-                  <div
-                    className="g-recaptcha"
-                    data-sitekey="6LdDdHMrAAAAACAFBXAti9TAy03E3RHmcaxKYpZJ"
-                  ></div>
+                  <div id="recaptcha-container"></div>
+                  {!recaptchaLoaded && (
+                    <div className="text-gray-400 text-sm">Loading reCAPTCHA...</div>
+                  )}
                 </div>
                 <button type="submit" className="bg-green-500 text-white px-5 py-2.5 border-none rounded cursor-pointer text-base hover:bg-green-600">Send Message</button>
               </form>
