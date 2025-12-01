@@ -102,7 +102,7 @@ function CommentsApprovalPanel() {
   if (loading) {
     return (
       <div className="text-center p-4">
-        <p className="text-gray-300 text-sm">Loading comments...</p>
+        <p className="text-[var(--color-textSecondary)] text-sm">Loading comments...</p>
       </div>
     );
   }
@@ -110,15 +110,15 @@ function CommentsApprovalPanel() {
   return (
     <div>
       <div className="mb-3">
-        <h3 className="text-white text-base mb-2">
+        <h3 className="text-[var(--color-text)] text-base mb-2">
           Comments Management
         </h3>
         {message && (
           <div
             className={`mb-2 p-2 rounded text-sm ${
               message.includes("Error")
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
+                ? "bg-[var(--color-error)] text-[var(--color-text)]"
+                : "bg-[var(--color-success)] text-[var(--color-text)]"
             }`}
           >
             {message}
@@ -131,8 +131,8 @@ function CommentsApprovalPanel() {
             onClick={() => setFilter("all")}
             className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
               filter === "all"
-                ? "bg-white text-gray-900"
-                : "bg-gray-700 text-white hover:bg-gray-600"
+                ? "bg-[var(--color-primary)] text-[var(--color-primaryText)]"
+                : "bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondaryHover)]"
             }`}
           >
             All ({comments.length})
@@ -142,7 +142,7 @@ function CommentsApprovalPanel() {
             className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
               filter === "pending"
                 ? "bg-yellow-600 text-white"
-                : "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondaryHover)]"
             }`}
           >
             Pending ({pendingCount})
@@ -152,7 +152,7 @@ function CommentsApprovalPanel() {
             className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
               filter === "approved"
                 ? "bg-green-600 text-white"
-                : "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-[var(--color-secondary)] text-[var(--color-text)] hover:bg-[var(--color-secondaryHover)]"
             }`}
           >
             Approved ({approvedCount})
@@ -163,7 +163,7 @@ function CommentsApprovalPanel() {
       {/* Comments List */}
       {filteredComments.length === 0 ? (
         <div className="text-center p-4">
-          <p className="text-gray-300 text-sm">
+          <p className="text-[var(--color-textSecondary)] text-sm">
             {filter === "pending"
               ? "No pending comments"
               : filter === "approved"
@@ -176,16 +176,16 @@ function CommentsApprovalPanel() {
           {filteredComments.map((comment) => (
             <div
               key={comment.id}
-              className="bg-[#1a1a1a] p-3 rounded border border-gray-600"
+              className="bg-[var(--color-background)] p-3 rounded border border-[var(--color-border)]"
             >
               <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-white font-medium text-sm">
+                    <span className="text-[var(--color-text)] font-medium text-sm">
                       {comment.author_name}
                     </span>
                     {comment.author_email && (
-                      <span className="text-gray-400 text-xs">
+                      <span className="text-[var(--color-textTertiary)] text-xs">
                         ({comment.author_email})
                       </span>
                     )}
@@ -199,13 +199,13 @@ function CommentsApprovalPanel() {
                       {comment.approved ? "Approved" : "Pending"}
                     </span>
                   </div>
-                  <p className="text-gray-400 text-xs mb-1">
+                  <p className="text-[var(--color-textTertiary)] text-xs mb-1">
                     Post:{" "}
-                    <span className="text-gray-300">
+                    <span className="text-[var(--color-textSecondary)]">
                       {comment.blog_post_title || `ID: ${comment.blog_post_id}`}
                     </span>
                   </p>
-                  <p className="text-gray-500 text-xs">
+                  <p className="text-[var(--color-textTertiary)] text-xs">
                     {new Date(comment.created_at).toLocaleString("en-US", {
                       year: "numeric",
                       month: "short",
@@ -226,14 +226,14 @@ function CommentsApprovalPanel() {
                   )}
                   <button
                     onClick={() => handleDelete(comment.id)}
-                    className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+                    className="bg-[var(--color-error)] text-[var(--color-text)] px-2 py-1 rounded text-xs hover:bg-[var(--color-errorLight)] transition-colors"
                   >
                     Delete
                   </button>
                 </div>
               </div>
-              <div className="pt-2 border-t border-gray-700">
-                <p className="text-gray-300 whitespace-pre-wrap leading-normal m-0 text-sm">
+              <div className="pt-2 border-t border-[var(--color-border)]">
+                <p className="text-[var(--color-textSecondary)] whitespace-pre-wrap leading-normal m-0 text-sm">
                   {comment.content}
                 </p>
               </div>

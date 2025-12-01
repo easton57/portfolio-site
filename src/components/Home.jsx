@@ -27,24 +27,24 @@ function Home() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-5 my-5 w-full box-border items-start">
-      <div className="bg-[#2d2d2d] p-5 rounded-md w-full lg:flex-[1.3] min-w-0 box-border self-start">
+      <div className="bg-[var(--color-surface)] p-5 rounded-md w-full lg:flex-[1.3] min-w-0 box-border self-start">
         <img
           src={meImg}
           alt="Easton Seidel"
           className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left"
         />
-        <p className="m-0 overflow-hidden inline text-white">
+        <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
           I'm Easton Seidel. I'm a Systems Administrator and aspiring Software
           Engineer in Southern California.
         </p>
         <br />
         <br />
-        <p className="m-0 overflow-hidden inline text-white">
+        <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
           I'm passionate about technology and how it can increase efficiency and
           productivity. You can find examples of that on my
           <a
             href="https://github.com/easton57"
-            className="text-white hover:text-gray-300"
+            className="text-[var(--color-text)] hover:opacity-70"
           >
             github
           </a>{" "}
@@ -52,14 +52,14 @@ function Home() {
         </p>
         <br />
         <br />
-        <p className="m-0 overflow-hidden inline text-white">
+        <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
           In my free time, I play the upright bass in Southern California
           Philharmonic and tinker with any electronics I can get my hands on.
         </p>
       </div>
 
       <div className="w-full lg:flex-[0.7] flex flex-col gap-5 min-w-0">
-        <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
+        <div className="bg-[var(--color-surface)] p-5 rounded-md w-full box-border">
           <table className="w-full mx-auto social-media-table">
             <tbody>
               <tr>
@@ -68,7 +68,7 @@ function Home() {
                     href="https://www.linkedin.com/in/easton-seidel/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-white hover:text-gray-300 inline-block"
+                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
                   >
                     <img
                       src={linkedinImg}
@@ -82,7 +82,7 @@ function Home() {
                     href="https://github.com/easton57"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-white hover:text-gray-300 inline-block"
+                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
                   >
                     <img
                       src={githubImg}
@@ -96,7 +96,7 @@ function Home() {
                     href="https://www.youtube.com/@eastonseidel5024"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-white hover:text-gray-300 inline-block"
+                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
                   >
                     <img
                       src={youtubeImg}
@@ -110,37 +110,37 @@ function Home() {
           </table>
         </div>
 
-        <div className="bg-[#2d2d2d] p-5 rounded-md w-full box-border">
-          <h3 className="text-white text-lg font-bold mb-4">
+        <div className="bg-[var(--color-surface)] p-5 rounded-md w-full box-border">
+          <h3 className="text-[var(--color-text)] text-lg font-bold mb-4">
             Recent Blog Posts
           </h3>
           <div id="blog-posts">
             {loading ? (
-              <p className="text-gray-300">Loading posts...</p>
+              <p className="text-[var(--color-textSecondary)]">Loading posts...</p>
             ) : blogPosts.length > 0 ? (
               blogPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="mb-3 pb-3 border-b border-gray-600 last:border-b-0 last:mb-0 last:pb-0"
+                  className="mb-3 pb-3 border-b border-[var(--color-border)] last:border-b-0 last:mb-0 last:pb-0"
                 >
                   <div className="flex justify-between items-start mb-2.5">
-                    <h5 className="m-0 text-white flex-1 pr-2">
+                    <h5 className="m-0 text-[var(--color-text)] flex-1 pr-2">
                       <Link
                         to={`/blog-post?id=${post.id}`}
-                        className="text-white no-underline hover:text-gray-300"
+                        className="text-[var(--color-text)] no-underline hover:opacity-70"
                       >
                         {post.title}
                       </Link>
                     </h5>
-                    <small className="text-gray-500 text-xs whitespace-nowrap">
+                    <small className="text-[var(--color-textTertiary)] text-xs whitespace-nowrap">
                       {new Date(post.created_at).toLocaleDateString()}
                     </small>
                   </div>
-                  <p className="m-0 text-gray-300">{post.summary}</p>
+                  <p className="m-0 text-[var(--color-textSecondary)]">{post.summary}</p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-300">No posts available</p>
+              <p className="text-[var(--color-textSecondary)]">No posts available</p>
             )}
           </div>
         </div>

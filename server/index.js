@@ -619,9 +619,171 @@ app.delete("/api/admin/comments/:id", authenticateToken, async (req, res) => {
   }
 });
 
+// Theme/Settings API endpoints
+
+// GET endpoint to fetch current theme (public)
+app.get("/api/theme", async (req, res) => {
+  try {
+    // Ensure settings table exists
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS settings (
+          id SERIAL PRIMARY KEY,
+          key varchar(100) UNIQUE NOT NULL,
+          value text NOT NULL,
+          updated_at timestamp not null default CURRENT_TIMESTAMP
+        )
+      `);
+    } catch (createErr) {
+      console.error("Error creating settings table:", createErr);
+    }
+
+    const result = await pool.query(
+      "SELECT value FROM settings WHERE key = $1",
+      ['theme']
+    );
+
+    if (result.rows.length === 0) {
+      // If no theme setting exists, create default
+      try {
+        await pool.query(
+          "INSERT INTO settings (key, value) VALUES ($1, $2)",
+          ['theme', 'dark']
+        );
+      } catch (insertErr) {
+        console.error("Error inserting default theme:", insertErr);
+      }
+      return res.json({ theme: 'dark', customColors: null });
+    }
+
+    const theme = result.rows[0].value;
+    let customColors = null;
+
+    // If theme is custom, fetch custom colors
+    if (theme === 'custom') {
+      const customResult = await pool.query(
+        "SELECT value FROM settings WHERE key = $1",
+        ['custom_theme_colors']
+      );
+      if (customResult.rows.length > 0) {
+        try {
+          customColors = JSON.parse(customResult.rows[0].value);
+        } catch (parseErr) {
+          console.error("Error parsing custom colors:", parseErr);
+        }
+      }
+    }
+
+    res.json({ theme, customColors });
+  } catch (err) {
+    console.error("Error fetching theme:", err);
+    // If table doesn't exist, return default theme
+    if (err.code === '42P01') {
+      return res.json({ theme: 'dark', customColors: null });
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT endpoint to update theme (protected)
+app.put("/api/admin/theme", authenticateToken, async (req, res) => {
+  try {
+    const { theme, customColors } = req.body;
+
+    // Validate theme
+    const validThemes = ['dark', 'light', 'blue', 'green', 'purple', 'custom'];
+    if (!theme || !validThemes.includes(theme)) {
+      return res.status(400).json({ error: "Invalid theme. Must be one of: " + validThemes.join(', ') });
+    }
+
+    // If custom theme, validate customColors
+    if (theme === 'custom') {
+      if (!customColors || typeof customColors !== 'object') {
+        return res.status(400).json({ error: "Custom theme requires customColors object" });
+      }
+    }
+
+    // Ensure settings table exists
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS settings (
+          id SERIAL PRIMARY KEY,
+          key varchar(100) UNIQUE NOT NULL,
+          value text NOT NULL,
+          updated_at timestamp not null default CURRENT_TIMESTAMP
+        )
+      `);
+    } catch (createErr) {
+      console.error("Error creating settings table:", createErr);
+    }
+
+    // Update or insert theme setting
+    const result = await pool.query(
+      `INSERT INTO settings (key, value, updated_at) 
+       VALUES ($1, $2, CURRENT_TIMESTAMP)
+       ON CONFLICT (key) 
+       DO UPDATE SET value = $2, updated_at = CURRENT_TIMESTAMP
+       RETURNING *`,
+      ['theme', theme]
+    );
+
+    // If custom theme, save custom colors
+    if (theme === 'custom' && customColors) {
+      await pool.query(
+        `INSERT INTO settings (key, value, updated_at) 
+         VALUES ($1, $2, CURRENT_TIMESTAMP)
+         ON CONFLICT (key) 
+         DO UPDATE SET value = $2, updated_at = CURRENT_TIMESTAMP`,
+        ['custom_theme_colors', JSON.stringify(customColors)]
+      );
+    }
+
+    res.json({ success: true, theme: result.rows[0].value });
+  } catch (err) {
+    console.error("Error updating theme:", err);
+    // Provide more detailed error message
+    if (err.code === '42P01') {
+      return res.status(500).json({ 
+        error: "Settings table does not exist. Please run the database migration: docker/SQL/create_settings_table.sql" 
+      });
+    }
+    res.status(500).json({ error: "Internal server error: " + err.message });
+  }
+});
+
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   // Generate RSS feed on startup
   await generateRSSFeed();
   console.log("RSS feed generated");
+  
+  // Ensure settings table exists and has default theme
+  try {
+    // First, try to create the settings table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS settings (
+        id SERIAL PRIMARY KEY,
+        key varchar(100) UNIQUE NOT NULL,
+        value text NOT NULL,
+        updated_at timestamp not null default CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Settings table verified/created");
+    
+    // Check if theme setting exists, create if not
+    const settingsCheck = await pool.query(
+      "SELECT value FROM settings WHERE key = $1",
+      ['theme']
+    );
+    if (settingsCheck.rows.length === 0) {
+      await pool.query(
+        "INSERT INTO settings (key, value) VALUES ($1, $2)",
+        ['theme', 'dark']
+      );
+      console.log("Default theme setting created");
+    }
+  } catch (err) {
+    console.error("Error initializing settings:", err);
+    console.error("You may need to run the SQL migration manually. See docker/SQL/create_settings_table.sql");
+  }
 });
