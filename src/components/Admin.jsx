@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import AvailableImagesList from "./AvailableImagesList";
+import CommentsApprovalPanel from "./CommentsApprovalPanel";
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -425,6 +426,16 @@ function Admin() {
               >
                 Edit
               </button>
+              <button
+                className={`bg-[#2d2d2d] text-gray-300 border-none px-6 py-3 cursor-pointer border-b-2 border-transparent text-base font-bold transition-all duration-300 hover:bg-gray-800 hover:text-white ${
+                  activeTab === "comments"
+                    ? "bg-gray-800 text-white border-b-2 border-white"
+                    : ""
+                }`}
+                onClick={() => setActiveTab("comments")}
+              >
+                Comments
+              </button>
             </div>
 
             {activeTab === "new" && (
@@ -799,6 +810,12 @@ function Admin() {
                     </button>
                   </div>
                 </form>
+              </div>
+            )}
+
+            {activeTab === "comments" && (
+              <div id="commentsTab" className="block">
+                <CommentsApprovalPanel />
               </div>
             )}
           </div>

@@ -509,6 +509,116 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 // Serve static images from src/img
 app.use('/src/img', express.static(path.join(__dirname, '..', 'src', 'img')));
 
+// Comments API endpoints
+
+// POST endpoint to create a new comment (public)
+app.post("/api/comments", async (req, res) => {
+  try {
+    const { blog_post_id, author_name, author_email, content } = req.body;
+
+    // Validate required fields
+    if (!blog_post_id || !author_name || !content) {
+      return res
+        .status(400)
+        .json({ error: "Blog post ID, author name, and content are required" });
+    }
+
+    // Verify that the blog post exists
+    const postCheck = await pool.query(
+      "SELECT id FROM blog_posts WHERE id = $1",
+      [blog_post_id]
+    );
+
+    if (postCheck.rows.length === 0) {
+      return res.status(404).json({ error: "Blog post not found" });
+    }
+
+    // Insert comment (defaults to approved = false)
+    const result = await pool.query(
+      "INSERT INTO comments (blog_post_id, author_name, author_email, content) VALUES ($1, $2, $3, $4) RETURNING *",
+      [blog_post_id, author_name, author_email || null, content]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error creating comment:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET endpoint to fetch approved comments for a specific blog post (public)
+app.get("/api/comments/:postId", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const result = await pool.query(
+      "SELECT id, blog_post_id, author_name, author_email, content, created_at FROM comments WHERE blog_post_id = $1 AND approved = true ORDER BY created_at ASC",
+      [postId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching comments:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET endpoint to fetch all comments for admin (protected)
+app.get("/api/admin/comments", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT c.*, bp.title as blog_post_title 
+       FROM comments c 
+       LEFT JOIN blog_posts bp ON c.blog_post_id = bp.id 
+       ORDER BY c.created_at DESC`
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching comments for admin:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT endpoint to approve a comment (protected)
+app.put("/api/admin/comments/:id/approve", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      "UPDATE comments SET approved = true WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error approving comment:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE endpoint to delete a comment (protected)
+app.delete("/api/admin/comments/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      "DELETE FROM comments WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    res.json({ success: true, message: "Comment deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   // Generate RSS feed on startup
