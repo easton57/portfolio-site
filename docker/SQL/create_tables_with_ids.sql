@@ -2,6 +2,7 @@
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS blog_posts;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS settings;
 
 -- Create blog_posts table with ID
 CREATE TABLE blog_posts (
@@ -36,3 +37,14 @@ CREATE INDEX idx_comments_blog_post_id ON comments(blog_post_id);
 
 -- Create index on approved for admin queries
 CREATE INDEX idx_comments_approved ON comments(approved);
+
+-- Create settings table for site-wide configuration
+CREATE TABLE settings (
+	id SERIAL PRIMARY KEY,
+	key varchar(100) UNIQUE NOT NULL,
+	value text NOT NULL,
+	updated_at timestamp not null default CURRENT_TIMESTAMP
+);
+
+-- Insert default theme setting
+INSERT INTO settings (key, value) VALUES ('theme', 'dark');

@@ -28,3 +28,5 @@ backups
 ignore
 blog-feed.xml
 uploads
+server/public/rss
+server/public/uploads

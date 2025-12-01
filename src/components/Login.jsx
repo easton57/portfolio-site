@@ -75,15 +75,15 @@ function Login() {
   return (
     <div className="w-full">
       <div className="flex gap-5 my-5 w-full box-border">
-        <div className="max-w-md mx-auto my-12 bg-[#2d2d2d] p-10 rounded-md shadow-lg">
+        <div className="max-w-md mx-auto my-12 bg-[var(--color-surface)] p-10 rounded-md shadow-lg">
         <div className="text-center mb-8">
-          <h2 className="text-white m-0 mb-2.5 text-2xl">Admin Login</h2>
-          <p className="text-gray-300 m-0">Please enter your credentials to access the admin panel</p>
+          <h2 className="text-[var(--color-text)] m-0 mb-2.5 text-2xl">Admin Login</h2>
+          <p className="text-[var(--color-textSecondary)] m-0">Please enter your credentials to access the admin panel</p>
         </div>
 
         <form id="loginForm" onSubmit={handleSubmit}>
           <div className="mb-5">
-            <label htmlFor="username" className="block mb-1 font-bold text-white">Username:</label>
+            <label htmlFor="username" className="block mb-1 font-bold text-[var(--color-text)]">Username:</label>
             <input 
               type="text" 
               id="username" 
@@ -92,12 +92,12 @@ function Login() {
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border text-base focus:outline-none focus:border-white focus:shadow-[0_0_5px_rgba(255,255,255,0.3)]"
+              className="w-full p-3 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border text-base focus:outline-none focus:border-[var(--color-text)] focus:shadow-[0_0_5px_rgba(255,255,255,0.3)]"
             />
           </div>
 
           <div className="mb-5">
-            <label htmlFor="password" className="block mb-1 font-bold text-white">Password:</label>
+            <label htmlFor="password" className="block mb-1 font-bold text-[var(--color-text)]">Password:</label>
             <input 
               type="password" 
               id="password" 
@@ -106,13 +106,13 @@ function Login() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded bg-[#2d2d2d] text-white font-sans box-border text-base focus:outline-none focus:border-white focus:shadow-[0_0_5px_rgba(255,255,255,0.3)]"
+              className="w-full p-3 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border text-base focus:outline-none focus:border-[var(--color-text)] focus:shadow-[0_0_5px_rgba(255,255,255,0.3)]"
             />
           </div>
 
           <button 
             type="submit" 
-            className="w-full bg-white text-gray-900 p-3 border-none rounded cursor-pointer font-bold text-base mt-2.5 transition-colors duration-300 hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed" 
+            className="w-full bg-[var(--color-primary)] text-[var(--color-primaryText)] p-3 border-none rounded cursor-pointer font-bold text-base mt-2.5 transition-colors duration-300 hover:bg-[var(--color-primaryHover)] disabled:bg-[var(--color-secondary)] disabled:cursor-not-allowed" 
             id="loginBtn"
             disabled={isLoading}
           >
@@ -121,13 +121,13 @@ function Login() {
         </form>
 
         {errorMessage && (
-          <div id="errorMessage" className="bg-red-800 text-white p-2.5 rounded mt-4 text-center font-bold block">
+          <div id="errorMessage" className="bg-[var(--color-error)] text-[var(--color-text)] p-2.5 rounded mt-4 text-center font-bold block">
             {errorMessage}
           </div>
         )}
 
         <div className="text-center mt-5">
-          <a href="/" className="text-white no-underline text-sm hover:underline">← Back to Home</a>
+          <a href="/" className="text-[var(--color-text)] no-underline text-sm hover:underline">← Back to Home</a>
         </div>
       </div>
     </div>

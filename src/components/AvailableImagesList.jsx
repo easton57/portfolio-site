@@ -63,8 +63,8 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
 
   if (loading) {
     return (
-      <div className="bg-[#1a1a1a] p-4 rounded-md border border-gray-600">
-        <div className="text-center text-gray-300">
+      <div className="bg-[var(--color-background)] p-4 rounded-md border border-[var(--color-border)]">
+        <div className="text-center text-[var(--color-textSecondary)]">
           <div className="loading-spinner mb-2"></div>
           <p>Loading available images...</p>
         </div>
@@ -74,8 +74,8 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
 
   if (error) {
     return (
-      <div className="bg-[#1a1a1a] p-4 rounded-md border border-gray-600">
-        <div className="text-center text-red-400">
+      <div className="bg-[var(--color-background)] p-4 rounded-md border border-[var(--color-border)]">
+        <div className="text-center text-[var(--color-error)]">
           <p>{error}</p>
           <button
             onClick={fetchAvailableImages}
@@ -89,13 +89,13 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
   }
 
   return (
-    <div className="bg-[#1a1a1a] p-4 rounded-md border border-gray-600">
+    <div className="bg-[var(--color-background)] p-4 rounded-md border border-[var(--color-border)]">
       <div className="flex justify-between items-center mb-4">
-        <h4 className="text-white text-lg font-bold">Available Images</h4>
+        <h4 className="text-[var(--color-text)] text-lg font-bold">Available Images</h4>
         <div className="flex gap-2">
           <button
             onClick={togglePreview}
-            className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-500"
+            className="bg-[var(--color-secondary)] text-[var(--color-text)] px-3 py-1 rounded text-sm hover:bg-[var(--color-secondaryHover)]"
           >
             {showPreview ? 'Hide Preview' : 'Show Preview'}
           </button>
@@ -109,7 +109,7 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
       </div>
 
       {images.length === 0 ? (
-        <div className="text-center text-gray-400 py-4">
+        <div className="text-center text-[var(--color-textTertiary)] py-4">
           <p>No images available</p>
           <p className="text-sm mt-1">Upload images or add them to src/img/ directory</p>
         </div>
@@ -117,7 +117,7 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
         <>
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-300 text-sm">
+              <span className="text-[var(--color-textSecondary)] text-sm">
                 {selectedImages.length} image(s) selected
               </span>
               {selectedImages.length > 0 && (
@@ -138,7 +138,7 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
                 className={`group relative cursor-pointer rounded-md overflow-hidden border-2 transition-all ${
                   selectedImages.includes(image.url)
                     ? 'border-blue-500 bg-blue-900 bg-opacity-20'
-                    : 'border-gray-600 hover:border-gray-400 bg-[#1a1a1a]'
+                    : `border-[var(--color-border)] hover:border-[var(--color-borderLight)] bg-[var(--color-background)]`
                 }`}
                 onClick={() => handleImageClick(image)}
               >
@@ -153,16 +153,16 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
                     }}
                   />
                 ) : (
-                  <div className="w-full h-20 bg-gray-600 flex items-center justify-center">
-                    <span className="text-gray-400 text-xs text-center px-1">
+                  <div className="w-full h-20 bg-[var(--color-surfaceSecondary)] flex items-center justify-center">
+                    <span className="text-[var(--color-textTertiary)] text-xs text-center px-1">
                           📷
                     </span>
                   </div>
                 )}
                 
                 {/* Fallback for broken images */}
-                <div className="w-full h-20 bg-gray-600 flex items-center justify-center" style={{ display: 'none' }}>
-                  <span className="text-gray-400 text-xs">❌</span>
+                <div className="w-full h-20 bg-[var(--color-surfaceSecondary)] flex items-center justify-center" style={{ display: 'none' }}>
+                  <span className="text-[var(--color-textTertiary)] text-xs">❌</span>
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 p-1">
@@ -200,7 +200,7 @@ function AvailableImagesList({ onImageSelect, onImageInsert, refreshTrigger }) {
             ))}
           </div>
 
-          <div className="mt-4 text-center text-gray-400 text-sm">
+          <div className="mt-4 text-center text-[var(--color-textTertiary)] text-sm">
             <p>Click images to select multiple, or use the + button for quick insert</p>
             <p>Images are served from: <code>/src/img/</code> and <code>/uploads/</code></p>
           </div>
