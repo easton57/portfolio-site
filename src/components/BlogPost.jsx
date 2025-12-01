@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import CommentsSection from "./CommentsSection";
 
 function BlogPost() {
   const [searchParams] = useSearchParams();
@@ -101,6 +102,7 @@ function BlogPost() {
               </ReactMarkdown>
             </div>
           </article>
+          <CommentsSection postId={post.id} />
         </div>
       </div>
     </div>
