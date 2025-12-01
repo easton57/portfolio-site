@@ -5,6 +5,7 @@ function CommentsSection({ postId }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     author_name: "",
     author_email: "",
@@ -57,6 +58,7 @@ function CommentsSection({ postId }) {
           author_email: "",
           content: "",
         });
+        setShowForm(false);
       } else {
         const error = await response.json();
         setMessage(`Error: ${error.error || "Failed to submit comment"}`);
@@ -78,85 +80,130 @@ function CommentsSection({ postId }) {
 
   return (
     <div className="mt-8 pt-8 border-t border-gray-600">
-      <h2 className="text-white text-xl sm:text-2xl mb-6">Comments</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-white text-xl sm:text-2xl m-0">Comments</h2>
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-white text-gray-900 px-4 py-2 border-none rounded cursor-pointer font-bold text-sm hover:bg-gray-300"
+          >
+            Add Comment
+          </button>
+        )}
+      </div>
 
       {/* Comment Form */}
-      <div className="mb-8">
-        <h3 className="text-white text-lg mb-4">Leave a Comment</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="author_name"
-              className="block mb-1 text-white text-sm font-medium"
+      {showForm && (
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-white text-lg m-0">Leave a Comment</h3>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setMessage("");
+                setFormData({
+                  author_name: "",
+                  author_email: "",
+                  content: "",
+                });
+              }}
+              className="text-gray-400 hover:text-white text-sm"
             >
-              Name <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              id="author_name"
-              name="author_name"
-              required
-              value={formData.author_name}
-              onChange={handleChange}
-              className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
-              placeholder="Your name"
-            />
+              Cancel
+            </button>
           </div>
-          <div>
-            <label
-              htmlFor="author_email"
-              className="block mb-1 text-white text-sm font-medium"
-            >
-              Email (optional)
-            </label>
-            <input
-              type="email"
-              id="author_email"
-              name="author_email"
-              value={formData.author_email}
-              onChange={handleChange}
-              className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
-              placeholder="your.email@example.com"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="content"
-              className="block mb-1 text-white text-sm font-medium"
-            >
-              Comment <span className="text-red-400">*</span>
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              required
-              value={formData.content}
-              onChange={handleChange}
-              rows="5"
-              className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white resize-y"
-              placeholder="Write your comment here..."
-            />
-          </div>
-          {message && (
-            <div
-              className={`p-3 rounded ${
-                message.includes("Error")
-                  ? "bg-red-600 text-white"
-                  : "bg-green-600 text-white"
-              }`}
-            >
-              {message}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="author_name"
+                className="block mb-1 text-white text-sm font-medium"
+              >
+                Name <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="author_name"
+                name="author_name"
+                required
+                value={formData.author_name}
+                onChange={handleChange}
+                className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
+                placeholder="Your name"
+              />
             </div>
-          )}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
-          >
-            {submitting ? "Submitting..." : "Submit Comment"}
-          </button>
-        </form>
-      </div>
+            <div>
+              <label
+                htmlFor="author_email"
+                className="block mb-1 text-white text-sm font-medium"
+              >
+                Email (optional)
+              </label>
+              <input
+                type="email"
+                id="author_email"
+                name="author_email"
+                value={formData.author_email}
+                onChange={handleChange}
+                className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white"
+                placeholder="your.email@example.com"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="content"
+                className="block mb-1 text-white text-sm font-medium"
+              >
+                Comment <span className="text-red-400">*</span>
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                required
+                value={formData.content}
+                onChange={handleChange}
+                rows="5"
+                className="w-full p-2.5 border border-gray-600 rounded bg-[#1a1a1a] text-white font-sans box-border focus:outline-none focus:border-white resize-y"
+                placeholder="Write your comment here..."
+              />
+            </div>
+            {message && (
+              <div
+                className={`p-3 rounded ${
+                  message.includes("Error")
+                    ? "bg-red-600 text-white"
+                    : "bg-green-600 text-white"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="bg-white text-gray-900 px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-300 disabled:bg-gray-600 disabled:cursor-not-allowed"
+              >
+                {submitting ? "Submitting..." : "Submit Comment"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setMessage("");
+                  setFormData({
+                    author_name: "",
+                    author_email: "",
+                    content: "",
+                  });
+                }}
+                className="bg-gray-600 text-white px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Comments List */}
       <div>
