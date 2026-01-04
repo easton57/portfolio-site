@@ -167,6 +167,125 @@ app.post("/api/logout", (req, res) => {
   res.json({ success: true, message: "Logged out successfully" });
 });
 
+// GET endpoint to get current user info (protected)
+app.get("/api/admin/user", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, username, created_at FROM users WHERE id = $1",
+      [req.user.userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching user info:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT endpoint to change username (protected)
+app.put("/api/admin/change-username", authenticateToken, async (req, res) => {
+  try {
+    const { newUsername } = req.body;
+
+    if (!newUsername || newUsername.trim().length === 0) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+
+    const trimmedUsername = newUsername.trim();
+
+    // Check if new username already exists
+    const existingUser = await pool.query(
+      "SELECT id FROM users WHERE username = $1 AND id != $2",
+      [trimmedUsername, req.user.userId],
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Username already taken" });
+    }
+
+    // Update username
+    const result = await pool.query(
+      "UPDATE users SET username = $1 WHERE id = $2 RETURNING id, username",
+      [trimmedUsername, req.user.userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Username updated successfully",
+      username: result.rows[0].username,
+    });
+  } catch (err) {
+    console.error("Error changing username:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PUT endpoint to change password (protected)
+app.put("/api/admin/change-password", authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ error: "Current password and new password are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "New password must be at least 6 characters long" });
+    }
+
+    // Get current user's password hash
+    const result = await pool.query(
+      "SELECT password_hash FROM users WHERE id = $1",
+      [req.user.userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = result.rows[0];
+
+    // Verify current password
+    const validPassword = await bcrypt.compare(
+      currentPassword,
+      user.password_hash,
+    );
+    if (!validPassword) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password
+    await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [
+      hashedPassword,
+      req.user.userId,
+    ]);
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    console.error("Error changing password:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // API endpoint to get recent blog posts
 app.get("/api/recent-posts", async (req, res) => {
   try {
@@ -751,6 +870,55 @@ app.put("/api/admin/theme", authenticateToken, async (req, res) => {
   }
 });
 
+// Function to create default admin user if no users exist
+async function ensureDefaultAdminUser() {
+  try {
+    const username = "admin";
+    const password = "password";
+
+    // Check if any users exist in the database
+    const userCount = await pool.query("SELECT COUNT(*) as count FROM users");
+
+    if (parseInt(userCount.rows[0].count) > 0) {
+      console.log("Users already exist in database. Skipping default admin creation.");
+      return;
+    }
+
+    // Check if admin user specifically exists (in case of race condition)
+    const existingUser = await pool.query(
+      "SELECT id FROM users WHERE username = $1",
+      [username],
+    );
+
+    if (existingUser.rows.length > 0) {
+      console.log("Default admin user already exists");
+      return;
+    }
+
+    console.log("No users found. Creating default admin user (admin/password)...");
+
+    // Hash password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert user into database
+    const result = await pool.query(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username",
+      [username, hashedPassword],
+    );
+
+    console.log(`✅ Default admin user created successfully! (ID: ${result.rows[0].id})`);
+    console.log("⚠️  WARNING: Please change the default password after first login!");
+  } catch (err) {
+    // If users table doesn't exist yet, that's okay - it will be created by migrations
+    if (err.code === "42P01") {
+      console.log("Users table does not exist yet. Run database migrations first.");
+    } else {
+      console.error("Error creating default admin user:", err.message);
+    }
+  }
+}
+
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   // Generate RSS feed on startup
@@ -786,4 +954,7 @@ app.listen(port, async () => {
     console.error("Error initializing settings:", err);
     console.error("You may need to run the SQL migration manually. See docker/SQL/create_settings_table.sql");
   }
+
+  // Create default admin user if it doesn't exist
+  await ensureDefaultAdminUser();
 });

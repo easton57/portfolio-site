@@ -24,6 +24,11 @@ function Admin() {
   const [imageUploadTrigger, setImageUploadTrigger] = useState(0);
   const [themeMessage, setThemeMessage] = useState("");
   const [customThemeColors, setCustomThemeColors] = useState({});
+  const [currentUser, setCurrentUser] = useState(null);
+  const [usernameChangeMessage, setUsernameChangeMessage] = useState("");
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState("");
+  const [isChangingUsername, setIsChangingUsername] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const navigate = useNavigate();
   const { theme, themes, changeTheme, customColors } = useTheme();
   
@@ -205,6 +210,7 @@ function Admin() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchPosts();
+      fetchCurrentUser();
     }
   }, [isAuthenticated]);
 
@@ -251,6 +257,109 @@ function Admin() {
       setPosts(data);
     } catch (error) {
       console.error("Error fetching posts:", error);
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    const token = localStorage.getItem("authToken");
+    try {
+      const response = await fetch("/api/admin/user", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(data);
+      }
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+    }
+  };
+
+  const handleUsernameChange = async (e) => {
+    e.preventDefault();
+    setIsChangingUsername(true);
+    setUsernameChangeMessage("");
+
+    const newUsername = e.target.newUsername.value;
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch("/api/admin/change-username", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newUsername }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUsernameChangeMessage("Username updated successfully!");
+        setCurrentUser({ ...currentUser, username: data.username });
+        e.target.reset();
+        // Update token with new username if needed
+        // Note: JWT tokens contain username, so user may need to re-login
+        setTimeout(() => {
+          setUsernameChangeMessage(
+            "Note: You may need to log out and log back in for changes to take full effect.",
+          );
+        }, 2000);
+      } else {
+        setUsernameChangeMessage(`Error: ${data.error || "Failed to update username"}`);
+      }
+    } catch (error) {
+      console.error("Error changing username:", error);
+      setUsernameChangeMessage("Error: Failed to update username");
+    } finally {
+      setIsChangingUsername(false);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setIsChangingPassword(true);
+    setPasswordChangeMessage("");
+
+    const currentPassword = e.target.currentPassword.value;
+    const newPassword = e.target.newPassword.value;
+    const confirmPassword = e.target.confirmPassword.value;
+
+    if (newPassword !== confirmPassword) {
+      setPasswordChangeMessage("Error: New passwords do not match");
+      setIsChangingPassword(false);
+      return;
+    }
+
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch("/api/admin/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setPasswordChangeMessage("Password updated successfully!");
+        e.target.reset();
+      } else {
+        setPasswordChangeMessage(`Error: ${data.error || "Failed to update password"}`);
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      setPasswordChangeMessage("Error: Failed to update password");
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -462,6 +571,16 @@ function Admin() {
                 onClick={() => setActiveTab("theme")}
               >
                 Theme
+              </button>
+              <button
+                className={`bg-[var(--color-surface)] text-[var(--color-textSecondary)] border-none px-6 py-3 cursor-pointer border-b-2 border-transparent text-base font-bold transition-all duration-300 hover:bg-[var(--color-surfaceSecondary)] hover:text-[var(--color-text)] ${
+                  activeTab === "account"
+                    ? "bg-[var(--color-surfaceSecondary)] text-[var(--color-text)] border-b-2 border-[var(--color-text)]"
+                    : ""
+                }`}
+                onClick={() => setActiveTab("account")}
+              >
+                Account
               </button>
             </div>
 
@@ -1048,6 +1167,146 @@ function Admin() {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === "account" && (
+              <div id="accountTab" className="block">
+                <h3 className="text-[var(--color-text)] text-lg sm:text-xl mb-4">
+                  Account Settings
+                </h3>
+
+                {currentUser && (
+                  <div className="mb-6 p-4 bg-[var(--color-background)] rounded-md">
+                    <p className="text-[var(--color-textSecondary)] mb-2">
+                      <span className="font-bold text-[var(--color-text)]">Current Username:</span>{" "}
+                      {currentUser.username}
+                    </p>
+                    <p className="text-[var(--color-textSecondary)] text-sm">
+                      <span className="font-bold text-[var(--color-text)]">Account Created:</span>{" "}
+                      {new Date(currentUser.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+
+                {/* Change Username Form */}
+                <div className="bg-[var(--color-surface)] p-4 sm:p-8 rounded-md my-5">
+                  <h4 className="text-[var(--color-text)] text-lg mb-4">Change Username</h4>
+                  <form onSubmit={handleUsernameChange}>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="newUsername"
+                        className="block mb-1 font-bold text-[var(--color-text)]"
+                      >
+                        New Username:
+                      </label>
+                      <input
+                        type="text"
+                        id="newUsername"
+                        name="newUsername"
+                        required
+                        minLength={1}
+                        className="w-full p-2.5 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border focus:outline-none focus:border-[var(--color-text)]"
+                      />
+                    </div>
+                    {usernameChangeMessage && (
+                      <div
+                        className={`mb-4 p-3 rounded ${
+                          usernameChangeMessage.includes("Error")
+                            ? "bg-[var(--color-error)] text-[var(--color-text)]"
+                            : "bg-[var(--color-success)] text-[var(--color-text)]"
+                        }`}
+                      >
+                        {usernameChangeMessage}
+                      </div>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={isChangingUsername}
+                      className="bg-[var(--color-primary)] text-[var(--color-primaryText)] px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-[var(--color-primaryHover)] disabled:bg-[var(--color-secondary)] disabled:cursor-not-allowed"
+                    >
+                      {isChangingUsername ? "Updating..." : "Update Username"}
+                    </button>
+                  </form>
+                </div>
+
+                {/* Change Password Form */}
+                <div className="bg-[var(--color-surface)] p-4 sm:p-8 rounded-md my-5">
+                  <h4 className="text-[var(--color-text)] text-lg mb-4">Change Password</h4>
+                  <form onSubmit={handlePasswordChange}>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="currentPassword"
+                        className="block mb-1 font-bold text-[var(--color-text)]"
+                      >
+                        Current Password:
+                      </label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        name="currentPassword"
+                        required
+                        autoComplete="current-password"
+                        className="w-full p-2.5 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border focus:outline-none focus:border-[var(--color-text)]"
+                      />
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="newPassword"
+                        className="block mb-1 font-bold text-[var(--color-text)]"
+                      >
+                        New Password:
+                      </label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        required
+                        minLength={6}
+                        autoComplete="new-password"
+                        className="w-full p-2.5 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border focus:outline-none focus:border-[var(--color-text)]"
+                      />
+                      <p className="text-[var(--color-textTertiary)] text-sm mt-1">
+                        Password must be at least 6 characters long
+                      </p>
+                    </div>
+                    <div className="mb-5">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="block mb-1 font-bold text-[var(--color-text)]"
+                      >
+                        Confirm New Password:
+                      </label>
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        required
+                        minLength={6}
+                        autoComplete="new-password"
+                        className="w-full p-2.5 border border-[var(--color-border)] rounded bg-[var(--color-background)] text-[var(--color-text)] font-sans box-border focus:outline-none focus:border-[var(--color-text)]"
+                      />
+                    </div>
+                    {passwordChangeMessage && (
+                      <div
+                        className={`mb-4 p-3 rounded ${
+                          passwordChangeMessage.includes("Error")
+                            ? "bg-[var(--color-error)] text-[var(--color-text)]"
+                            : "bg-[var(--color-success)] text-[var(--color-text)]"
+                        }`}
+                      >
+                        {passwordChangeMessage}
+                      </div>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={isChangingPassword}
+                      className="bg-[var(--color-primary)] text-[var(--color-primaryText)] px-6 py-3 border-none rounded cursor-pointer font-bold text-base hover:bg-[var(--color-primaryHover)] disabled:bg-[var(--color-secondary)] disabled:cursor-not-allowed"
+                    >
+                      {isChangingPassword ? "Updating..." : "Update Password"}
+                    </button>
+                  </form>
+                </div>
               </div>
             )}
           </div>
