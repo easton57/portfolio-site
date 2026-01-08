@@ -39,6 +39,7 @@ function Home() {
           In this blog, I will be sharing my thoughts and insights on the Bible as I study as well as share stories from my walk with God.
         </p>
         <br />
+        <br />
         <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
           In addition to the Bible, I will share my thoughts and insights on my studies of other religious and philosophical texts. I believe it's important to understand the beliefs of others and that it will help me be a better tool in God's hands.
         </p>
