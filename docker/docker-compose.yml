@@ -1,9 +1,9 @@
 name: bible-blog
 services:
   # PostgreSQL Database
-  postgres:
+  bible_postgres:
     image: postgres:15-alpine
-    container_name: bible_blog_postgres
+    container_name: bible_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-portfolio}
@@ -28,8 +28,8 @@ services:
       start_period: 40s
 
   # React frontend (production)
-  app:
-    container_name: bible_blog_app
+  bible_app:
+    container_name: bible_app
     build:
       context: ../
       dockerfile: docker/Dockerfile.prod
@@ -40,28 +40,28 @@ services:
     ports:
       - "80"
     depends_on:
-      - server
+      - bible_server
 
   # Node.js Application
-  server:
+  bible_server:
     build:
       context: ../
       dockerfile: docker/Dockerfile.server
-    container_name: bible_blog_server
+    container_name: bible_server
     restart: unless-stopped
     user: root
     environment:
       NODE_ENV: production
       PORT: 3000
       SITE_URL: ${SITE_URL:-http://localhost}
-      DB_HOST: postgres
+      DB_HOST: bible_postgres
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-portfolio}
       DB_USER: ${DB_USER:-portfolio_user}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
-      postgres:
+      bible_postgres:
         condition: service_healthy
     networks:
       - internal
@@ -81,5 +81,6 @@ networks:
   internal:
     driver: bridge
     internal: true
-  npm_network: # Adjust for NPM network of external compose
+  portfolio-site_npm_network: # Adjust for NPM network of external compose
+    driver: bridge
     external: true
