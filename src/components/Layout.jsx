@@ -10,7 +10,6 @@ function Layout({ children }) {
       
       <nav className="my-5 border-b border-[var(--color-border)] pb-2.5 w-full">
         <ul className="list-none p-0 m-0 flex gap-3 sm:gap-5">
-          <li className="p-0"><Link to="/about" className="font-bold text-[var(--color-text)] hover:opacity-70 text-sm sm:text-base transition-opacity">About</Link></li>
           <li className="p-0"><Link to="/blog" className="font-bold text-[var(--color-text)] hover:opacity-70 text-sm sm:text-base transition-opacity">Blog</Link></li>
         </ul>
       </nav>

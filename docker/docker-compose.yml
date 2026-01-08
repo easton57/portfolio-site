@@ -1,9 +1,9 @@
-name: portfolio-site
+name: bible-blog
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: portfolio_postgres
+    container_name: bible_blog_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-portfolio}
@@ -29,7 +29,7 @@ services:
 
   # React frontend (production)
   app:
-    container_name: portfolio_app
+    container_name: bible_blog_app
     build:
       context: ../
       dockerfile: docker/Dockerfile.prod
@@ -47,7 +47,7 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile.server
-    container_name: portfolio_server
+    container_name: bible_blog_server
     restart: unless-stopped
     user: root
     environment:
@@ -60,12 +60,6 @@ services:
       DB_USER: ${DB_USER:-portfolio_user}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
-      RECAPTCHA_VERIFY_URL: ${RECAPTCHA_VERIFY_URL}
-      EMAILJS_SERVICE_ID: ${EMAILJS_SERVICE_ID}
-      EMAILJS_TEMPLATE_ID: ${EMAILJS_TEMPLATE_ID}
-      EMAILJS_PUBLIC_KEY: ${EMAILJS_PUBLIC_KEY}
-      EMAILJS_PRIVATE_KEY: ${EMAILJS_PRIVATE_KEY}
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,35 +73,13 @@ services:
       - ../server/public/rss:/usr/src/app/public/rss:rw
       - ../server/public/uploads:/usr/src/app/public/uploads:rw
 
-  # Nginx Proxy Manager
-  npm:
-    image: jc21/nginx-proxy-manager:2.11.2
-    container_name: nginx_proxy_manager
-    restart: unless-stopped
-    ports:
-      - "81:81" # Admin UI
-      - "443:443"
-    environment:
-      - TZ=UTC
-      - DISABLE_IPV6=true
-    volumes:
-      - npm_data:/data
-      - npm_letsencrypt:/etc/letsencrypt
-    networks:
-      - npm_network
-
 volumes:
   postgres_data:
-    driver: local
-  npm_data:
-    driver: local
-  npm_letsencrypt:
     driver: local
 
 networks:
   internal:
     driver: bridge
     internal: true
-  npm_network:
-    driver: bridge
+  npm_network: # Adjust for NPM network of external compose
     external: true

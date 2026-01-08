@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import meImg from "../img/me.jpg";
-import linkedinImg from "../img/linkedin.png";
-import githubImg from "../img/github.png";
-import youtubeImg from "../img/youtube.png";
 
 function Home() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -34,82 +31,21 @@ function Home() {
           className="max-w-[200px] block h-auto float-left mr-5 mb-2.5 clear-left"
         />
         <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
-          I'm Easton Seidel. I'm a Systems Administrator and aspiring Software
-          Engineer in Southern California.
+          I'm Easton Seidel. I'm a Christian and Husband.
         </p>
         <br />
         <br />
         <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
-          I'm passionate about technology and how it can increase efficiency and
-          productivity. You can find examples of that on my
-          <a
-            href="https://github.com/easton57"
-            className="text-[var(--color-text)] hover:opacity-70"
-          >
-            github
-          </a>{" "}
-          where I have my linux configuration and other projects.
+          In this blog, I will be sharing my thoughts and insights on the Bible as I study as well as share stories from my walk with God.
         </p>
-        <br />
         <br />
         <p className="m-0 overflow-hidden inline text-[var(--color-text)]">
-          In my free time, I play the upright bass in Southern California
-          Philharmonic and tinker with any electronics I can get my hands on.
+          In addition to the Bible, I will share my thoughts and insights on my studies of other religious and philosophical texts. I believe it's important to understand the beliefs of others and that it will help me be a better tool in God's hands.
         </p>
+        <br />
       </div>
 
       <div className="w-full lg:flex-[0.7] flex flex-col gap-5 min-w-0">
-        <div className="bg-[var(--color-surface)] p-5 rounded-md w-full box-border">
-          <table className="w-full mx-auto social-media-table">
-            <tbody>
-              <tr>
-                <td className="text-center align-middle px-2.5">
-                  <a
-                    href="https://www.linkedin.com/in/easton-seidel/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
-                  >
-                    <img
-                      src={linkedinImg}
-                      className="social-media-icon"
-                      alt="LinkedIn"
-                    />
-                  </a>
-                </td>
-                <td className="text-center align-middle px-2.5">
-                  <a
-                    href="https://github.com/easton57"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
-                  >
-                    <img
-                      src={githubImg}
-                      className="social-media-icon"
-                      alt="GitHub"
-                    />
-                  </a>
-                </td>
-                <td className="text-center align-middle px-2.5">
-                  <a
-                    href="https://www.youtube.com/@eastonseidel5024"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-[var(--color-text)] hover:opacity-70 inline-block"
-                  >
-                    <img
-                      src={youtubeImg}
-                      className="social-media-icon"
-                      alt="YouTube"
-                    />
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <div className="bg-[var(--color-surface)] p-5 rounded-md w-full box-border">
           <h3 className="text-[var(--color-text)] text-lg font-bold mb-4">
             Recent Blog Posts
