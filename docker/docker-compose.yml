@@ -15,7 +15,6 @@ services:
       - ./SQL:/docker-entrypoint-initdb.d
     networks:
       - internal
-      - npm_network
     healthcheck:
       test:
         [
@@ -36,7 +35,7 @@ services:
     restart: unless-stopped
     networks:
       - internal
-      - npm_network
+      - portfolio-site_npm_network
     ports:
       - "80"
     depends_on:
@@ -65,7 +64,7 @@ services:
         condition: service_healthy
     networks:
       - internal
-      - npm_network
+      - portfolio-site_npm_network
     ports:
       - "3000"
     volumes:
